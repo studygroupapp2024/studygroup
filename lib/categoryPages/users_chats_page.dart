@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy/components/containers/user_chat_list.dart';
 import 'package:study_buddy/pages/chat/chat_page.dart';
-import 'package:study_buddy/pages/home/createStudyGroup.dart';
+import 'package:study_buddy/pages/home/create_study_group.dart';
 import 'package:study_buddy/services/group/user_chats.dart';
 
 class FindPage extends StatefulWidget {
@@ -35,7 +35,8 @@ class _FindPageState extends State<FindPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CreateStudyGroup()),
+                  MaterialPageRoute(
+                      builder: (context) => const CreateStudyGroup()),
                 );
               },
               icon: const Icon(

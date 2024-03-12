@@ -7,10 +7,20 @@ class Courses extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  // getting all the available courses in the database where the current user is not enrolled
+  // getting all the available courses
   Stream<QuerySnapshot> getCourses() {
-    return _firestore.collection("subjects").where("studentId",
-        isNotEqualTo: [_firebaseAuth.currentUser!.uid]).snapshots();
+    return _firestore.collection("subjects").snapshots();
+  }
+
+  // getting all the available courses - filtered
+  Stream<QuerySnapshot> getFilteredCourses(String userId, courseCodes) {
+    return _firestore
+        .collection("users")
+        .doc(userId)
+        .collection("courses")
+        .where("isCompleted", isEqualTo: false)
+        .where("courseCode", whereIn: courseCodes)
+        .snapshots();
   }
 
   // join a course
@@ -21,6 +31,7 @@ class Courses extends ChangeNotifier {
 
     // create a new course
     StudentCourses newCourse = StudentCourses(
+      courseId: courseId,
       courseCode: courseCode,
       courseTitle: courseTitle,
       isCompleted: false,

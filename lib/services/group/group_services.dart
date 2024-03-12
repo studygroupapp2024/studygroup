@@ -7,10 +7,17 @@ class GroupService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // getting all the study groups
+  Stream<QuerySnapshot> getStudyGroups() {
+    return _firestore.collection("study_groups").snapshots();
+  }
+
   // Create a Group Chat
   Future<void> sendGroupChatInfo(
     String studyGrpTitle,
-    String studyGrpDesc,
+    studyGrpDesc,
+    course,
+    courseId,
   ) async {
     // get current user info
     final String currentUserId = _firebaseAuth.currentUser!.uid;
@@ -23,6 +30,8 @@ class GroupService extends ChangeNotifier {
       creatorName: curreUserEmail,
       studyGroupTitle: studyGrpTitle,
       studyGroupDescription: studyGrpDesc,
+      studyGroupCourseName: course,
+      studyGroupCourseId: courseId,
       timestamp: timestamp,
       members: [curreUserEmail],
       membersId: [currentUserId],

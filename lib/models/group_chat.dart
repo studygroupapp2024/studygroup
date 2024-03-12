@@ -5,6 +5,8 @@ class GroupChat {
   final String creatorName;
   final String studyGroupTitle;
   final String studyGroupDescription;
+  final String studyGroupCourseName;
+  final String studyGroupCourseId;
   final Timestamp timestamp;
   final List<dynamic> members;
   final List<dynamic> membersId;
@@ -14,6 +16,8 @@ class GroupChat {
     required this.creatorName,
     required this.studyGroupTitle,
     required this.studyGroupDescription,
+    required this.studyGroupCourseName,
+    required this.studyGroupCourseId,
     required this.timestamp,
     required this.members,
     required this.membersId,
@@ -26,6 +30,8 @@ class GroupChat {
       'creatorName': creatorName,
       'studyGrppTitle': studyGroupTitle,
       'studyGrpDescription': studyGroupDescription,
+      'studyGrpCourseName': studyGroupCourseName,
+      'studyGrpCourseId': studyGroupCourseId,
       'createdAt': timestamp,
       'members': members,
       'membersId': membersId,

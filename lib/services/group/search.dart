@@ -15,14 +15,15 @@ class CustomSearch extends SearchDelegate {
 
   late List<Map<String, dynamic>> _filteredList = [];
 
-  void countLength() {
+  void filteredList() {
     courses.listen((QuerySnapshot<Object?> snapshot) {
       List<Map<String, dynamic>> contents = [];
       for (var doc in snapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         List<dynamic> studentIds = data['studentId'] ?? [];
         if (!studentIds.contains(_firebaseAuth.currentUser!.uid)) {
-          contents.add(data);
+          print(data);
+          contents.add({'id': doc.id, 'data': data});
         }
       }
       _filteredList = contents;
@@ -61,7 +62,7 @@ class CustomSearch extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    countLength();
+    filteredList();
     return StreamBuilder<QuerySnapshot>(
       stream: courses,
       builder: (context, snapshot) {
@@ -75,33 +76,32 @@ class CustomSearch extends SearchDelegate {
           return ListView.builder(
             itemCount: _filteredList.length,
             itemBuilder: (context, index) {
-              var doc = snapshot.data!.docs[index];
+              var doc = _filteredList[index];
 
-              var data = doc.data() as Map<String, dynamic>;
-              var documentId = doc.id;
-              var icon = (data['studentId'] as List<dynamic>)
+              var documentId = doc['id'];
+              var icon = (doc['data']['studentId'] as List<dynamic>)
                       .contains(_firebaseAuth.currentUser!.uid)
                   ? const Icon(Icons.check)
                   : const Icon(Icons.add_circle_outline_outlined);
-              var onTap = (data['studentId'] as List<dynamic>)
+              var onTap = (doc['data']['studentId'] as List<dynamic>)
                       .contains(_firebaseAuth.currentUser!.uid)
                   ? () => null
                   : () => joinCourse(
-                        data["subject_code"],
-                        data["subject_title"],
+                        doc['data']["subject_code"],
+                        doc['data']["subject_title"],
                         documentId,
                       );
-              if (data["subject_title"]
+              if (doc['data']["subject_title"]
                       .toString()
                       .toLowerCase()
                       .contains(query.toLowerCase()) ||
-                  data["subject_code"]
+                  doc['data']["subject_code"]
                       .toString()
                       .toLowerCase()
                       .contains(query.toLowerCase())) {
                 return ListTile(
-                  title: Text(data["subject_code"]),
-                  subtitle: Text(data["subject_title"]),
+                  title: Text(doc['data']["subject_code"]),
+                  subtitle: Text(doc['data']["subject_title"]),
                   trailing: IconButton(icon: icon, onPressed: onTap),
                 );
               }
@@ -115,6 +115,7 @@ class CustomSearch extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
+    filteredList();
     return StreamBuilder<QuerySnapshot>(
       stream: courses,
       builder: (context, snapshot) {
@@ -126,32 +127,35 @@ class CustomSearch extends SearchDelegate {
           );
         } else {
           return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
+            itemCount: _filteredList.length,
             itemBuilder: (context, index) {
-              var doc = snapshot.data!.docs[index];
+              var doc = _filteredList[index];
 
-              var data = doc.data() as Map<String, dynamic>;
-              var documentId = doc.id;
-
-              if (data["subject_title"]
+              var documentId = doc['id'];
+              var icon = (doc['data']['studentId'] as List<dynamic>)
+                      .contains(_firebaseAuth.currentUser!.uid)
+                  ? const Icon(Icons.check)
+                  : const Icon(Icons.add_circle_outline_outlined);
+              var onTap = (doc['data']['studentId'] as List<dynamic>)
+                      .contains(_firebaseAuth.currentUser!.uid)
+                  ? () => null
+                  : () => joinCourse(
+                        doc['data']["subject_code"],
+                        doc['data']["subject_title"],
+                        documentId,
+                      );
+              if (doc['data']["subject_title"]
                       .toString()
                       .toLowerCase()
                       .contains(query.toLowerCase()) ||
-                  data["subject_code"]
+                  doc['data']["subject_code"]
                       .toString()
                       .toLowerCase()
                       .contains(query.toLowerCase())) {
                 return ListTile(
-                  title: Text(data["subject_code"]),
-                  subtitle: Text(data["subject_title"]),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.add_circle_outline_outlined),
-                    onPressed: () => joinCourse(
-                      data["subject_code"],
-                      data["subject_title"],
-                      documentId,
-                    ),
-                  ),
+                  title: Text(doc['data']["subject_code"]),
+                  subtitle: Text(doc['data']["subject_title"]),
+                  trailing: IconButton(icon: icon, onPressed: onTap),
                 );
               }
               return Container();

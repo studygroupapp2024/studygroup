@@ -1,21 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:study_buddy/services/auth/auth_gate.dart';
 import 'package:study_buddy/services/auth/auth_service.dart';
 
 class ProfilePage extends StatelessWidget {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final AuthService _auth = AuthService();
   ProfilePage({super.key});
 
-  void logout(BuildContext context) async {
-    final auth = AuthService();
-    auth.signOut();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const AuthGate(),
-      ),
-    );
+  void logout(BuildContext context) {
+    _auth.signOut();
+    Navigator.pop(context);
   }
 
   void view() async {
@@ -37,7 +31,7 @@ class ProfilePage extends StatelessWidget {
           IconButton(
             onPressed: () => logout(context),
             icon: const Icon(
-              Icons.logout_outlined,
+              Icons.logout,
             ),
           ),
         ],
