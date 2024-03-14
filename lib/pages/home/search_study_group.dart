@@ -29,11 +29,28 @@ class _FindStudyGroupState extends State<FindStudyGroup> {
   }
 
   // Study Groups
-
   late final Stream<QuerySnapshot<Object?>> _studyGroups = getStudyGroups();
 
   Stream<QuerySnapshot<Object?>> getStudyGroups() {
     return _groupService.getStudyGroups();
+  }
+
+  late List<Map<String, dynamic>> _filteredList = [];
+
+  void filteredList() {
+    _studyGroups.listen((QuerySnapshot<Object?> snapshot) {
+      List<Map<String, dynamic>> contents = [];
+      for (var doc in snapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        List<dynamic> studentIds = data['membersId'] ?? [];
+        if (!studentIds.contains(_firebaseAuth.currentUser!.uid)) {
+          print(data);
+          contents.add({'id': doc.id, 'data': data});
+        }
+      }
+      _filteredList = contents;
+    });
+    print("EXECUTED AGAIN");
   }
 
   void joinGroupChat(String chatId, groupTitle) async {
@@ -47,31 +64,6 @@ class _FindStudyGroupState extends State<FindStudyGroup> {
   }
 
   final List<String> _selectedFilters = [];
-  late List<Map<String, dynamic>> _filteredStudyGroupList = [];
-
-  void filterStudyGroupList() {
-    _studyGroups.listen((QuerySnapshot<Object?> snapshot) {
-      List<Map<String, dynamic>> contents = [];
-      for (var doc in snapshot.docs) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        List<dynamic> studentIds = data['membersId'] ?? [];
-        if (!studentIds.contains(_firebaseAuth.currentUser!.uid)) {
-          if (_selectedFilters.isEmpty ||
-              _selectedFilters
-                  .any((filter) => data['studyGroupCourseCode'] == filter)) {
-            contents.add({'id': doc.id, 'data': data});
-          }
-        }
-      }
-      _filteredStudyGroupList = contents;
-    });
-  }
-
-  void updateStudyGroupList() {
-    filterStudyGroupList();
-    print("FILTERS $_selectedFilters");
-    print("APPLIED");
-  }
 
   _selectFilter(String filter) {
     setState(() {
@@ -84,11 +76,10 @@ class _FindStudyGroupState extends State<FindStudyGroup> {
     });
   }
 
-  bool isSelected = false;
-
   @override
   Widget build(BuildContext context) {
-    filterStudyGroupList();
+    filteredList();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -114,19 +105,15 @@ class _FindStudyGroupState extends State<FindStudyGroup> {
                         padding: const EdgeInsets.all(20),
                         child: Column(
                           children: [
-                            Row(
+                            const Row(
                               children: [
-                                const Icon(Icons.close),
-                                const Expanded(
+                                Icon(Icons.close),
+                                Expanded(
                                   child: Text(
                                     "Courses",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(fontSize: 18),
                                   ),
-                                ),
-                                GestureDetector(
-                                  onTap: updateStudyGroupList,
-                                  child: const Text("Apply"),
                                 ),
                               ],
                             ),
@@ -181,7 +168,7 @@ class _FindStudyGroupState extends State<FindStudyGroup> {
                 ),
               );
             },
-            icon: const Icon(Icons.filter),
+            icon: const Icon(Icons.filter_list),
           ),
         ],
       ),
@@ -196,12 +183,18 @@ class _FindStudyGroupState extends State<FindStudyGroup> {
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else {
+                final tempList = _filteredList;
+                final filterStudyGroupList = tempList.where((studygroups) {
+                  return _selectedFilters.isEmpty ||
+                      _selectedFilters
+                          .contains(studygroups['data']['studyGrpCourseName']);
+                }).toList();
+
                 return Expanded(
                   child: ListView.builder(
-                    itemCount: _filteredStudyGroupList.length,
+                    itemCount: filterStudyGroupList.length,
                     itemBuilder: (context, index) {
-                      final doc = _filteredStudyGroupList[index];
-
+                      var doc = filterStudyGroupList[index];
                       var documentId = doc['id'];
                       return Column(children: [
                         StudyGroupContainer(

@@ -4,11 +4,13 @@ class MyCoursesContainer extends StatelessWidget {
   final String courseCode;
   final String courseTitle;
   final void Function() onTap;
+  final Icon icon;
   const MyCoursesContainer({
     super.key,
     required this.courseCode,
     required this.courseTitle,
     required this.onTap,
+    required this.icon,
   });
 
   @override
@@ -53,7 +55,7 @@ class MyCoursesContainer extends StatelessWidget {
               ),
               IconButton(
                 onPressed: onTap,
-                icon: const Icon(Icons.done),
+                icon: icon,
               )
             ],
           ),

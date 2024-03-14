@@ -36,6 +36,10 @@ class _FindCoursesState extends State<FindCourses> {
     await _courses.markCompleted(documentId);
   }
 
+  void deleteData(String documentId, courseId) async {
+    await _courses.deleteCourse(documentId, courseId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,10 +97,13 @@ class _FindCoursesState extends State<FindCourses> {
 
                           var data = doc.data() as Map<String, dynamic>;
                           var documentId = doc.id;
-
+                          var icon = (data["isCompleted"] == true
+                              ? const Icon(Icons.delete)
+                              : const Icon(Icons.check));
                           return MyCoursesContainer(
                             courseTitle: data["courseTitle"],
                             courseCode: data["courseCode"],
+                            icon: icon,
                             onTap: () => markCompleted(documentId),
                           );
                         },
@@ -142,13 +149,19 @@ class _FindCoursesState extends State<FindCourses> {
                           );
                         },
                         itemBuilder: (context, index) {
-                          var data = snapshot.data!.docs[index].data()
-                              as Map<String, dynamic>;
+                          var doc = snapshot.data!.docs[index];
 
+                          var data = doc.data() as Map<String, dynamic>;
+                          var documentId = doc.id;
+                          var icon = (data["isCompleted"] == true
+                              ? const Icon(Icons.delete)
+                              : const Icon(Icons.check));
                           return MyCoursesContainer(
                             courseCode: data["courseTitle"],
                             courseTitle: data["courseCode"],
-                            onTap: () {},
+                            icon: icon,
+                            onTap: () =>
+                                deleteData(documentId, data["courseId"]),
                           );
                         },
                       );

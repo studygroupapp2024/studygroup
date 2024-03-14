@@ -12,17 +12,6 @@ class Courses extends ChangeNotifier {
     return _firestore.collection("subjects").snapshots();
   }
 
-  // getting all the available courses - filtered
-  Stream<QuerySnapshot> getFilteredCourses(String userId, courseCodes) {
-    return _firestore
-        .collection("users")
-        .doc(userId)
-        .collection("courses")
-        .where("isCompleted", isEqualTo: false)
-        .where("courseCode", whereIn: courseCodes)
-        .snapshots();
-  }
-
   // join a course
   Future<void> addCourse(String courseCode, courseTitle, courseId) async {
     // get current info
@@ -87,5 +76,23 @@ class Courses extends ChangeNotifier {
         .collection("courses")
         .doc(documentId)
         .update({'isCompleted': true, 'completedData': timestamp});
+  }
+
+  // Delete course from firestore
+  Future<void> deleteCourse(String documentId, courseId) async {
+    await _firestore
+        .collection('users')
+        .doc(_firebaseAuth.currentUser!.uid)
+        .collection("courses")
+        .doc(documentId)
+        .delete();
+
+    await _firestore.collection("subjects").doc(courseId).update(
+      {
+        "studentId": FieldValue.arrayRemove(
+          [_firebaseAuth.currentUser!.uid],
+        ),
+      },
+    );
   }
 }
