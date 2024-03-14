@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy/components/containers/user_courses_container.dart';
+import 'package:study_buddy/components/dialogs/alert_dialog.dart';
 import 'package:study_buddy/services/group/courses.dart';
 import 'package:study_buddy/services/group/search.dart';
 
@@ -104,7 +105,15 @@ class _FindCoursesState extends State<FindCourses> {
                             courseTitle: data["courseTitle"],
                             courseCode: data["courseCode"],
                             icon: icon,
-                            onTap: () => markCompleted(documentId),
+                            onTap: () => showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ConfirmationDialog(
+                                  confirm: () => markCompleted(documentId),
+                                  content: "Have you completed this course?",
+                                );
+                              },
+                            ),
                           );
                         },
                       );
@@ -157,12 +166,24 @@ class _FindCoursesState extends State<FindCourses> {
                               ? const Icon(Icons.delete)
                               : const Icon(Icons.check));
                           return MyCoursesContainer(
-                            courseCode: data["courseTitle"],
-                            courseTitle: data["courseCode"],
-                            icon: icon,
-                            onTap: () =>
-                                deleteData(documentId, data["courseId"]),
-                          );
+                              courseCode: data["courseTitle"],
+                              courseTitle: data["courseCode"],
+                              icon: icon,
+                              onTap: () => showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return ConfirmationDialog(
+                                        confirm: () => deleteData(
+                                          documentId,
+                                          data["courseId"],
+                                        ),
+                                        content:
+                                            "Do you really want to delete this course?",
+                                      );
+                                    },
+                                  )
+                              //deleteData(documentId, data["courseId"]),
+                              );
                         },
                       );
                     }

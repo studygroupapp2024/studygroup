@@ -4,12 +4,13 @@ class RoundedTextFieldTitle extends StatelessWidget {
   final TextEditingController controller;
   final String title;
   final String hinttext;
-  const RoundedTextFieldTitle({
-    super.key,
-    required this.title,
-    required this.controller,
-    required this.hinttext,
-  });
+  final void Function(String)? onChange;
+  const RoundedTextFieldTitle(
+      {super.key,
+      required this.title,
+      required this.controller,
+      required this.hinttext,
+      required this.onChange});
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +32,7 @@ class RoundedTextFieldTitle extends StatelessWidget {
             minLines: 1,
             maxLines: 3,
             controller: controller,
+            onChanged: onChange,
             decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
                   borderSide:

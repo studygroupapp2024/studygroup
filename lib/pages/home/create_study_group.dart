@@ -23,6 +23,7 @@ class _CreateStudyGroupState extends State<CreateStudyGroup> {
 
   final Courses _courses = Courses();
 
+  Color primaryColor = const Color(0xff939cc4);
   // Current Courses
   late final Stream<QuerySnapshot<Object?>> _userCourses =
       getUserCoursesFunc(_firebaseAuth.currentUser!.uid);
@@ -46,6 +47,9 @@ class _CreateStudyGroupState extends State<CreateStudyGroup> {
       _grpDescController.clear();
       _selectedCourse = '';
       _selectedCourseId = '';
+      setState(() {
+        primaryColor = const Color(0xff939cc4);
+      });
     }
   }
 
@@ -70,6 +74,19 @@ class _CreateStudyGroupState extends State<CreateStudyGroup> {
                     title: "Name",
                     controller: _grpNameController,
                     hinttext: "What is the name of the study group?",
+                    onChange: (val) {
+                      if (_grpDescController.text.isNotEmpty &&
+                          val.isNotEmpty &&
+                          _selectedCourse.isNotEmpty) {
+                        setState(() {
+                          primaryColor = const Color(0xff6377d4);
+                        });
+                      } else {
+                        setState(() {
+                          primaryColor = const Color(0xff939cc4);
+                        });
+                      }
+                    },
                   ),
                   const SizedBox(
                     height: 25,
@@ -131,6 +148,20 @@ class _CreateStudyGroupState extends State<CreateStudyGroup> {
                                             _selectedCourseId = selected
                                                 ? code['courseId']
                                                 : '';
+
+                                            if (_grpDescController.text.isNotEmpty &&
+                                                _grpNameController
+                                                    .text.isNotEmpty &&
+                                                _selectedCourse.isNotEmpty) {
+                                              primaryColor = selected
+                                                  ? const Color(0xff6377d4)
+                                                  : const Color(0xff939cc4);
+                                            } else {
+                                              primaryColor =
+                                                  const Color(0xff939cc4);
+                                            }
+
+                                            print(_selectedCourse);
                                           });
                                         },
                                       ),
@@ -152,6 +183,19 @@ class _CreateStudyGroupState extends State<CreateStudyGroup> {
                     controller: _grpDescController,
                     hinttext:
                         "Let other students know about the purpose of the study group.",
+                    onChange: (val) {
+                      if (_grpNameController.text.isNotEmpty &&
+                          val.isNotEmpty &&
+                          _selectedCourse.isNotEmpty) {
+                        setState(() {
+                          primaryColor = const Color(0xff6377d4);
+                        });
+                      } else {
+                        setState(() {
+                          primaryColor = const Color(0xff939cc4);
+                        });
+                      }
+                    },
                   ),
                   const SizedBox(
                     height: 25,
@@ -160,8 +204,8 @@ class _CreateStudyGroupState extends State<CreateStudyGroup> {
                     text: "Create Study Group",
                     onTap: create,
                     margin: const EdgeInsets.symmetric(horizontal: 25),
-                    color: Theme.of(context).colorScheme.tertiaryContainer,
-                    textcolor: Theme.of(context).colorScheme.primary,
+                    color: primaryColor,
+                    textcolor: Theme.of(context).colorScheme.background,
                   ),
                 ],
               ),
