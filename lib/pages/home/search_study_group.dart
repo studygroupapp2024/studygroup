@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy/components/containers/filter_chip.dart';
 import 'package:study_buddy/components/containers/study_group_container.dart';
-import 'package:study_buddy/pages/chat/chat_page.dart';
 import 'package:study_buddy/services/group/courses.dart';
 import 'package:study_buddy/services/group/group_services.dart';
 
@@ -44,7 +43,6 @@ class _FindStudyGroupState extends State<FindStudyGroup> {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         List<dynamic> studentIds = data['membersId'] ?? [];
         if (!studentIds.contains(_firebaseAuth.currentUser!.uid)) {
-          print(data);
           contents.add({'id': doc.id, 'data': data});
         }
       }
@@ -53,8 +51,7 @@ class _FindStudyGroupState extends State<FindStudyGroup> {
     print("EXECUTED AGAIN");
   }
 
-  void joinGroupChat(String chatId, groupTitle) async {
-    print("Joining group chat with chatId: $chatId");
+  void requestToJoin(String chatId, groupTitle) async {
     await _groupService.checkAndAddUserEmail(
       _firebaseAuth.currentUser!.email.toString(),
       _firebaseAuth.currentUser!.uid,
@@ -204,18 +201,9 @@ class _FindStudyGroupState extends State<FindStudyGroup> {
                             members: (doc['data']["members"]?.length ?? 0)
                                 .toString(),
                             onTap: () {
-                              joinGroupChat(
+                              requestToJoin(
                                 documentId,
                                 doc['data']["studyGrppTitle"],
-                              );
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ChatPage(
-                                    groupChatId: documentId,
-                                    chatName: doc['data']["studyGrppTitle"],
-                                  ),
-                                ),
                               );
                             }),
                       ]);

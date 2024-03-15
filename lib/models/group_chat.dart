@@ -10,6 +10,8 @@ class GroupChat {
   final Timestamp timestamp;
   final List<dynamic> members;
   final List<dynamic> membersId;
+  final List<dynamic> membersRequest;
+  final List<dynamic> membersRequestId;
 
   GroupChat({
     required this.creatorId,
@@ -21,6 +23,8 @@ class GroupChat {
     required this.timestamp,
     required this.members,
     required this.membersId,
+    required this.membersRequest,
+    required this.membersRequestId,
   });
 
   // convert to a map
@@ -35,6 +39,8 @@ class GroupChat {
       'createdAt': timestamp,
       'members': members,
       'membersId': membersId,
+      'membersRequest': membersRequest,
+      'membersRequestId': membersRequestId,
     };
   }
 }

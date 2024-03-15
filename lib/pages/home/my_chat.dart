@@ -40,7 +40,7 @@ class _FindPageState extends State<FindPage> {
                 );
               },
               icon: const Icon(
-                Icons.create_rounded,
+                Icons.create,
               ))
         ],
       ),
