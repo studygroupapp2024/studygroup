@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy/components/containers/user_courses_container.dart';
 import 'package:study_buddy/components/dialogs/alert_dialog.dart';
-import 'package:study_buddy/services/group/courses.dart';
-import 'package:study_buddy/services/group/search.dart';
+import 'package:study_buddy/structure/group/courses.dart';
+import 'package:study_buddy/structure/group/search.dart';
 
 class FindCourses extends StatefulWidget {
   const FindCourses({super.key});

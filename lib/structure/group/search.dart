@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:study_buddy/services/group/courses.dart';
+import 'package:study_buddy/structure/group/courses.dart';
 
 class CustomSearch extends SearchDelegate {
   final Courses _courses = Courses();

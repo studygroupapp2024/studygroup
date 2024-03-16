@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy/components/containers/study_group_container.dart';
 import 'package:study_buddy/pages/chat/chat_page.dart';
-import 'package:study_buddy/services/group/group_services.dart';
+import 'package:study_buddy/structure/group/group_services.dart';
 
 class FindStudyGroup extends StatefulWidget {
   const FindStudyGroup({super.key});

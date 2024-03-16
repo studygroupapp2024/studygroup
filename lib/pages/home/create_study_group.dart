@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy/components/buttons/rounded_button.dart';
 import 'package:study_buddy/components/textfields/rounded_textfield_title.dart';
-import 'package:study_buddy/services/group/courses.dart';
-import 'package:study_buddy/services/group/group_services.dart';
+import 'package:study_buddy/structure/group/courses.dart';
+import 'package:study_buddy/structure/group/group_services.dart';
 
 class CreateStudyGroup extends StatefulWidget {
   const CreateStudyGroup({super.key});

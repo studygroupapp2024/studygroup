@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:study_buddy/components/buttons/rounded_button.dart';
-import 'package:study_buddy/services/auth/login_or_register.dart';
+import 'package:study_buddy/structure/auth/login_or_register.dart';
 
 class GetStarted extends StatelessWidget {
   const GetStarted({super.key});
@@ -21,7 +21,7 @@ class GetStarted extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "StuCo",
+                    "Study Buddy",
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.inversePrimary,
                         fontSize: 40),

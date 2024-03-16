@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:study_buddy/services/auth/auth_service.dart';
+import 'package:study_buddy/structure/auth/auth_service.dart';
 
 class ProfilePage extends StatelessWidget {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;

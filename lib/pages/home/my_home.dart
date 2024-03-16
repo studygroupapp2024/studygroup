@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy/components/containers/category_container.dart';
-import 'package:study_buddy/models/category_model.dart';
 import 'package:study_buddy/pages/home/my_profile.dart';
+import 'package:study_buddy/structure/models/category_model.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

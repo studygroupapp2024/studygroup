@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:study_buddy/models/user_courses.dart';
+import 'package:study_buddy/structure/models/user_courses.dart';
 
 class Courses extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

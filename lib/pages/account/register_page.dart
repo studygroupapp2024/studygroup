@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:study_buddy/components/buttons/rounded_button.dart';
 import 'package:study_buddy/components/textfields/rounded_textfield.dart';
-import 'package:study_buddy/services/auth/auth_service.dart';
+import 'package:study_buddy/structure/auth/auth_service.dart';
 
 class RegisterPage extends StatelessWidget {
   final void Function()? onTap;

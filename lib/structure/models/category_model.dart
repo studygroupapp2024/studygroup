@@ -78,7 +78,7 @@ class CategoryModel {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const FindStudyGroup(),
+              builder: (context) => FindStudyGroup(),
             ),
           );
         },

@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy/components/containers/chat_bubble.dart';
 import 'package:study_buddy/components/textfields/chat_textfield.dart';
-import 'package:study_buddy/pages/home/chat_info.dart';
-import 'package:study_buddy/services/group/chat_services.dart';
+import 'package:study_buddy/pages/chat/chat_info.dart';
+import 'package:study_buddy/structure/group/chat_services.dart';
 
 class ChatPage extends StatefulWidget {
   final String chatName;
@@ -60,7 +60,10 @@ class _ChatPageState extends State<ChatPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ChatInfo(),
+                    builder: (context) => ChatInfo(
+                      groupChatId: widget.groupChatId,
+                      groupChatTitle: widget.chatName,
+                    ),
                   ),
                 );
               },

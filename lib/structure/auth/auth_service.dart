@@ -6,6 +6,10 @@ class AuthService {
   // instance of Auth
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  String get email => _auth.currentUser!.email.toString();
+  String get id => _auth.currentUser!.uid;
+
   // signin
   Future<UserCredential> signInWithEmailPassword(String email, password) async {
     try {
