@@ -9,6 +9,7 @@ class AuthService {
 
   String get email => _auth.currentUser!.email.toString();
   String get id => _auth.currentUser!.uid;
+  String get name => _auth.currentUser!.displayName.toString();
 
   // signin
   Future<UserCredential> signInWithEmailPassword(String email, password) async {

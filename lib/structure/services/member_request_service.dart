@@ -1,8 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:study_buddy/structure/auth/auth_service.dart';
 
 class MemberRequest {
   final groupChat = FirebaseFirestore.instance.collection("study_groups");
   final userChat = FirebaseFirestore.instance.collection("users");
+
+  // request to join
+  void requestToJoin(String chatId) {
+    groupChat.doc(chatId).update({
+      'membersRequest': FieldValue.arrayUnion([AuthService().email]),
+      'membersRequestId': FieldValue.arrayUnion([AuthService().id]),
+    });
+  }
 
   // Update the Study Group Member List
   void acceptOrreject(

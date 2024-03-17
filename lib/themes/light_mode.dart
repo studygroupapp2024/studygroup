@@ -7,6 +7,6 @@ ThemeData lightMode = ThemeData(
     secondary: Colors.grey.shade200,
     tertiary: Colors.white,
     inversePrimary: Colors.grey.shade900,
-    tertiaryContainer: const Color.fromARGB(100, 254, 215, 249),
+    tertiaryContainer: const Color(0xff939cc4),
   ),
 );

@@ -74,7 +74,7 @@ class _FindCoursesState extends State<FindCourses> {
                 ),
               ),
               SizedBox(
-                height: 300,
+                height: 400,
                 child: StreamBuilder<QuerySnapshot>(
                   stream: _userCourses,
                   builder: (context, snapshot) {
@@ -111,6 +111,8 @@ class _FindCoursesState extends State<FindCourses> {
                                 return ConfirmationDialog(
                                   confirm: () => markCompleted(documentId),
                                   content: "Have you completed this course?",
+                                  title: "Confirmation",
+                                  type: "Yes",
                                 );
                               },
                             ),
@@ -137,7 +139,7 @@ class _FindCoursesState extends State<FindCourses> {
                 ),
               ),
               SizedBox(
-                height: 300,
+                height: 200,
                 child: StreamBuilder<QuerySnapshot>(
                   stream: _userCompletedCourses,
                   builder: (context, snapshot) {
@@ -179,6 +181,8 @@ class _FindCoursesState extends State<FindCourses> {
                                         ),
                                         content:
                                             "Do you really want to delete this course?",
+                                        title: "Confirmation",
+                                        type: "Yes",
                                       );
                                     },
                                   )

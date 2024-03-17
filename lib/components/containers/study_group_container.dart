@@ -6,14 +6,15 @@ class StudyGroupContainer extends StatelessWidget {
   final String title;
   final String desc;
   final String members;
+  final String identifier;
 
-  const StudyGroupContainer({
-    super.key,
-    required this.onTap,
-    required this.title,
-    required this.desc,
-    required this.members,
-  });
+  const StudyGroupContainer(
+      {super.key,
+      required this.onTap,
+      required this.title,
+      required this.desc,
+      required this.members,
+      required this.identifier});
 
   @override
   Widget build(BuildContext context) {
@@ -41,25 +42,53 @@ class StudyGroupContainer extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Row(
                       children: [
-                        Text(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
+                        const CircleAvatar(
+                          radius: 45,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                desc,
+                                style: const TextStyle(fontSize: 16),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(Icons.account_box_outlined),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    members,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
                           ),
-                        ),
-                        Text(
-                          desc,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          "Members: $members",
-                          style: const TextStyle(fontSize: 16),
-                        ),
+                        )
                       ],
                     ),
                   ),
@@ -69,11 +98,11 @@ class StudyGroupContainer extends StatelessWidget {
                 height: 15,
               ),
               RoundedButton(
-                text: "Join",
+                text: identifier,
                 onTap: onTap,
                 margin: const EdgeInsets.symmetric(horizontal: 15),
                 color: Theme.of(context).colorScheme.tertiaryContainer,
-                textcolor: Theme.of(context).colorScheme.inversePrimary,
+                textcolor: Theme.of(context).colorScheme.background,
               ),
             ],
           ),

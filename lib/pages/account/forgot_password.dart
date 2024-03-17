@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy/components/buttons/rounded_button.dart';
+import 'package:study_buddy/components/dialogs/create_group.dart';
 import 'package:study_buddy/components/textfields/rounded_textfield.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -22,41 +23,46 @@ class _ForgotPasswordPage extends State<ForgotPasswordPage> {
 
   void passwordReset(BuildContext context) async {
     try {
-      await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Password Reset Email Sent'),
-          content:
-              const Text('Please check your email to reset your password.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+      if (_emailController.text.isNotEmpty) {
+        await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Password Reset Email Sent'),
+            content:
+                const Text('Please check your email to reset your password.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Okay'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return const CreateGroupChatDialog(
+                confirm: null,
+                content: "Kindly enter your email to proceed.",
+                title: "Failed",
+                type: "Okay");
+          },
+        );
+      }
     } catch (e) {
-      print(e.toString());
       showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          content: Text(e.toString()),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+          context: context,
+          builder: (context) {
+            return const CreateGroupChatDialog(
+                confirm: null,
+                content: "There was an error. Please try again.",
+                title: "Failed",
+                type: "Okay");
+          });
     }
   }
 
@@ -134,7 +140,7 @@ class _ForgotPasswordPage extends State<ForgotPasswordPage> {
               text: "Send",
               onTap: () => passwordReset(context),
               margin: const EdgeInsets.symmetric(horizontal: 25),
-              color: Theme.of(context).colorScheme.inversePrimary,
+              color: Theme.of(context).colorScheme.tertiaryContainer,
               textcolor: Theme.of(context).colorScheme.background,
             ),
           ],

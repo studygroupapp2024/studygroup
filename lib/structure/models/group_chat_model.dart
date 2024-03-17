@@ -31,8 +31,11 @@ class GroupChatModel {
     required this.membersRequestId,
   });
 
+  get reference => null;
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'chatId': docID,
       'creatorId': creatorId,
       'creatorName': creatorName,
       'studyGroupTitle': studyGroupTitle,
@@ -69,6 +72,7 @@ class GroupChatModel {
   factory GroupChatModel.fromSnapshot(
       DocumentSnapshot<Map<String, dynamic>> doc) {
     return GroupChatModel(
+      docID: doc['chatId'],
       creatorId: doc['creatorId'],
       creatorName: doc['creatorName'],
       studyGroupTitle: doc['studyGroupTitle'],

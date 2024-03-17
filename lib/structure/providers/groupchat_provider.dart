@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:study_buddy/structure/auth/auth_service.dart';
-import 'package:study_buddy/structure/models/chat_info_model.dart';
+import 'package:study_buddy/structure/models/group_chat_model.dart';
+import 'package:study_buddy/structure/services/group_chat_service.dart';
 import 'package:study_buddy/structure/services/member_request_service.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -62,6 +63,12 @@ final groupChatMemberRequestProvider = StateProvider<MemberRequest>((ref) {
 });
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
+
+final createGroupChatProvider = StateProvider<GroupChat>((ref) {
+  return GroupChat();
+});
+
+// ============================ FUTURE PROVIDERS ============================
 
 // StateNotifier<MemberRequest>((ref) {
 //  return MemberRequest();

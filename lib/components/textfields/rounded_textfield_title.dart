@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class RoundedTextFieldTitle extends StatelessWidget {
-  final TextEditingController controller;
   final String title;
   final String hinttext;
   final void Function(String)? onChange;
+  final TextEditingController controller;
   const RoundedTextFieldTitle(
       {super.key,
       required this.title,
-      required this.controller,
       required this.hinttext,
+      required this.controller,
       required this.onChange});
 
   @override

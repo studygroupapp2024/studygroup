@@ -35,8 +35,7 @@ class _FindPageState extends State<FindPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const CreateStudyGroup()),
+                  MaterialPageRoute(builder: (context) => CreateStudyGroup()),
                 );
               },
               icon: const Icon(

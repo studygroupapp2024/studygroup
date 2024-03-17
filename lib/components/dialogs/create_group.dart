@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class ConfirmationDialog extends StatelessWidget {
+class CreateGroupChatDialog extends StatelessWidget {
   final void Function()? confirm;
   final String content;
   final String title;
   final String type;
 
-  const ConfirmationDialog(
+  const CreateGroupChatDialog(
       {super.key,
       required this.confirm,
       required this.content,
@@ -19,12 +19,6 @@ class ConfirmationDialog extends StatelessWidget {
       title: Text(title),
       content: Text(content),
       actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text("No"),
-        ),
         TextButton(
           onPressed: () {
             confirm?.call();

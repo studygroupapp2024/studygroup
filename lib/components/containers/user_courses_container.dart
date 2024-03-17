@@ -22,7 +22,7 @@ class MyCoursesContainer extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: Theme.of(context).colorScheme.tertiaryContainer,
+          color: Theme.of(context).colorScheme.secondary,
         ),
         child: Padding(
           padding: const EdgeInsets.only(

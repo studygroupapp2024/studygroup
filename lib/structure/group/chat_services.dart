@@ -32,7 +32,6 @@ class ChatService extends ChangeNotifier {
 
   // get messages
   Stream<QuerySnapshot> getMessages(String groupChatId) {
-    print("Fetching messages for groupChatId: $groupChatId");
     return _firestore
         .collection("study_groups")
         .doc(groupChatId)

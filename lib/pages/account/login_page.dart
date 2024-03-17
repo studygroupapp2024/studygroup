@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:study_buddy/components/buttons/rounded_button.dart';
+import 'package:study_buddy/components/dialogs/create_group.dart';
 import 'package:study_buddy/components/textfields/rounded_textfield.dart';
 import 'package:study_buddy/pages/account/forgot_password.dart';
 import 'package:study_buddy/structure/auth/auth_service.dart';
@@ -32,12 +33,16 @@ class LoginPage extends StatelessWidget {
       );
     } catch (e) {
       showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(e.toString()),
-        ),
-      );
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (context) {
+            return const CreateGroupChatDialog(
+                confirm: null,
+                content:
+                    "There was an error processing your information. Kindly try again.",
+                title: "Failed",
+                type: "Okay");
+          });
     }
     // catch any errors
   }
@@ -120,7 +125,7 @@ class LoginPage extends StatelessWidget {
                         text: "Sign in",
                         onTap: () => login(context),
                         margin: const EdgeInsets.symmetric(horizontal: 25),
-                        color: Theme.of(context).colorScheme.inversePrimary,
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
                         textcolor: Theme.of(context).colorScheme.background),
                     const SizedBox(
                       height: 25,

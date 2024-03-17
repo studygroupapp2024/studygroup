@@ -29,14 +29,14 @@ class _FindPageState extends State<FindPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Chats"),
+        title: const Text("Study Groups"),
+        centerTitle: true,
         actions: [
           IconButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const CreateStudyGroup()),
+                  MaterialPageRoute(builder: (context) => CreateStudyGroup()),
                 );
               },
               icon: const Icon(

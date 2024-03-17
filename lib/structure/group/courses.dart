@@ -19,7 +19,7 @@ class Courses extends ChangeNotifier {
     final Timestamp timestamp = Timestamp.now();
 
     // create a new course
-    StudentCourses newCourse = StudentCourses(
+    StudentCoursesModel newCourse = StudentCoursesModel(
       courseId: courseId,
       courseCode: courseCode,
       courseTitle: courseTitle,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:study_buddy/components/buttons/rounded_button.dart';
+import 'package:study_buddy/components/dialogs/create_group.dart';
 import 'package:study_buddy/components/textfields/rounded_textfield.dart';
 import 'package:study_buddy/structure/auth/auth_service.dart';
 
@@ -38,19 +39,25 @@ class RegisterPage extends StatelessWidget {
         }
       } else {
         showDialog(
-          context: context,
-          builder: (context) => const AlertDialog(
-            title: Text("Password does not match"),
-          ),
-        );
+            context: context,
+            builder: (context) {
+              return const CreateGroupChatDialog(
+                  confirm: null,
+                  content: "Password does not match.",
+                  title: "Failed",
+                  type: "Okay");
+            });
       }
     } else {
       showDialog(
-        context: context,
-        builder: (context) => const AlertDialog(
-          title: Text("Incomplete Information"),
-        ),
-      );
+          context: context,
+          builder: (context) {
+            return const CreateGroupChatDialog(
+                confirm: null,
+                content: "Incomplete information.",
+                title: "Failed",
+                type: "Okay");
+          });
     }
   }
 
@@ -117,7 +124,7 @@ class RegisterPage extends StatelessWidget {
                         text: "Sign up",
                         onTap: () => register(context),
                         margin: const EdgeInsets.symmetric(horizontal: 25),
-                        color: Theme.of(context).colorScheme.inversePrimary,
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
                         textcolor: Theme.of(context).colorScheme.background),
                     const SizedBox(
                       height: 25,

@@ -22,7 +22,6 @@ class CustomSearch extends SearchDelegate {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         List<dynamic> studentIds = data['studentId'] ?? [];
         if (!studentIds.contains(_firebaseAuth.currentUser!.uid)) {
-          print(data);
           contents.add({'id': doc.id, 'data': data});
         }
       }

@@ -30,7 +30,10 @@ class ChatInfo extends ConsumerWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 "Member Request",
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -49,44 +52,61 @@ class ChatInfo extends ConsumerWidget {
                                   memberRequests.membersRequestId[index];
                               return Padding(
                                 padding: const EdgeInsets.all(15),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        memberRequest,
-                                      ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 10,
+                                      top: 5,
+                                      bottom: 5,
                                     ),
-                                    IconButton(
-                                      onPressed: () {
-                                        ref
-                                            .read(
-                                                groupChatMemberRequestProvider)
-                                            .acceptOrreject(
-                                              groupChatId,
-                                              memberRequest,
-                                              memberRequestId,
-                                              groupChatTitle,
-                                              true,
-                                            );
-                                      },
-                                      icon: const Icon(Icons.check),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            memberRequest,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            ref
+                                                .read(
+                                                    groupChatMemberRequestProvider)
+                                                .acceptOrreject(
+                                                  groupChatId,
+                                                  memberRequest,
+                                                  memberRequestId,
+                                                  groupChatTitle,
+                                                  false,
+                                                );
+                                          },
+                                          icon: const Icon(Icons.close),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            ref
+                                                .read(
+                                                    groupChatMemberRequestProvider)
+                                                .acceptOrreject(
+                                                  groupChatId,
+                                                  memberRequest,
+                                                  memberRequestId,
+                                                  groupChatTitle,
+                                                  true,
+                                                );
+                                          },
+                                          icon: const Icon(Icons.check),
+                                        ),
+                                      ],
                                     ),
-                                    IconButton(
-                                      onPressed: () {
-                                        ref
-                                            .read(
-                                                groupChatMemberRequestProvider)
-                                            .acceptOrreject(
-                                              groupChatId,
-                                              memberRequest,
-                                              memberRequestId,
-                                              groupChatTitle,
-                                              false,
-                                            );
-                                      },
-                                      icon: const Icon(Icons.close),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               );
                             },

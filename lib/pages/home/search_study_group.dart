@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:study_buddy/components/containers/study_group_container.dart';
+import 'package:study_buddy/structure/auth/auth_service.dart';
 import 'package:study_buddy/structure/providers/groupchat_provider.dart';
 
 class FindStudyGroup extends ConsumerWidget {
@@ -14,7 +15,7 @@ class FindStudyGroup extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Study Groups",
+          "Find Study Groups",
         ),
         centerTitle: true,
       ),
@@ -57,11 +58,23 @@ class FindStudyGroup extends ConsumerWidget {
                       itemCount: groupchats.length,
                       itemBuilder: (context, index) {
                         final groupChats = groupchats[index];
+                        final membersRequestList = groupChats.membersRequestId
+                            .map((e) => e as String)
+                            .toList();
+
                         return StudyGroupContainer(
-                          onTap: null,
+                          onTap: () {
+                            ref
+                                .read(groupChatMemberRequestProvider)
+                                .requestToJoin(groupChats.docID.toString());
+                          },
                           title: groupChats.studyGroupTitle,
                           desc: groupChats.studyGroupDescription,
                           members: groupChats.members.length.toString(),
+                          identifier:
+                              membersRequestList.contains(AuthService().id)
+                                  ? "Pending Application"
+                                  : "Join",
                         );
                       },
                     );

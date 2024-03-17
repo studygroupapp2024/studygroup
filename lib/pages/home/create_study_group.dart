@@ -1,62 +1,26 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:study_buddy/components/buttons/rounded_button.dart';
+import 'package:study_buddy/components/dialogs/create_group.dart';
 import 'package:study_buddy/components/textfields/rounded_textfield_title.dart';
-import 'package:study_buddy/structure/group/courses.dart';
-import 'package:study_buddy/structure/group/group_services.dart';
+import 'package:study_buddy/structure/providers/course_provider.dart';
+import 'package:study_buddy/structure/providers/create_group_chat_providers.dart';
+import 'package:study_buddy/structure/providers/groupchat_provider.dart';
 
-class CreateStudyGroup extends StatefulWidget {
-  const CreateStudyGroup({super.key});
+class CreateStudyGroup extends ConsumerWidget {
+  CreateStudyGroup({super.key});
 
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   @override
-  State<CreateStudyGroup> createState() => _CreateStudyGroupState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUserCourse =
+        ref.watch(currentStudentCoursesInformationProvider);
+    final selectedCourse = ref.watch(selectedCourseProvider);
+    final courseId = ref.watch(selectedcourseIdProvider);
 
-class _CreateStudyGroupState extends State<CreateStudyGroup> {
-  final TextEditingController _grpNameController = TextEditingController();
+    final buttonColor = ref.watch(buttonColorProvider);
 
-  final TextEditingController _grpDescController = TextEditingController();
-
-  final GroupService _groupService = GroupService();
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
-  final Courses _courses = Courses();
-
-  Color primaryColor = const Color(0xff939cc4);
-  // Current Courses
-  late final Stream<QuerySnapshot<Object?>> _userCourses =
-      getUserCoursesFunc(_firebaseAuth.currentUser!.uid);
-
-  Stream<QuerySnapshot<Object?>> getUserCoursesFunc(String userId) {
-    return _courses.getCurrentUserCourses(userId);
-  }
-
-  void create() async {
-    FocusScope.of(context).unfocus();
-    if (_grpNameController.text.isNotEmpty &&
-        _grpDescController.text.isNotEmpty &&
-        _selectedCourse.isNotEmpty) {
-      print("OUTPUT: ${_grpNameController.text}");
-      print("OUTPUT: ${_grpDescController.text}");
-      print("OUTPUT: $_selectedCourse");
-      print("OUTPUT: $_selectedCourseId");
-      await _groupService.sendGroupChatInfo(_grpNameController.text,
-          _grpDescController.text, _selectedCourse, _selectedCourseId);
-      _grpNameController.clear();
-      _grpDescController.clear();
-      _selectedCourse = '';
-      _selectedCourseId = '';
-      setState(() {
-        primaryColor = const Color(0xff939cc4);
-      });
-    }
-  }
-
-  late String _selectedCourse = '';
-  late String _selectedCourseId = '';
-  @override
-  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -72,20 +36,10 @@ class _CreateStudyGroupState extends State<CreateStudyGroup> {
                 children: [
                   RoundedTextFieldTitle(
                     title: "Name",
-                    controller: _grpNameController,
                     hinttext: "What is the name of the study group?",
+                    controller: _nameController,
                     onChange: (val) {
-                      if (_grpDescController.text.isNotEmpty &&
-                          val.isNotEmpty &&
-                          _selectedCourse.isNotEmpty) {
-                        setState(() {
-                          primaryColor = const Color(0xff6377d4);
-                        });
-                      } else {
-                        setState(() {
-                          primaryColor = const Color(0xff939cc4);
-                        });
-                      }
+                      ref.read(chatNameProvider.notifier).state = val;
                     },
                   ),
                   const SizedBox(
@@ -108,70 +62,54 @@ class _CreateStudyGroupState extends State<CreateStudyGroup> {
                   ),
                   Column(
                     children: [
-                      StreamBuilder(
-                        stream: _userCourses,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) {
-                            return const Text("ERROR");
-                          } else if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          } else {
-                            var data = snapshot.data!.docs;
-
-                            var courseCodes = <Map<String, dynamic>>[];
-                            for (var doc in data) {
-                              var courseCode =
-                                  doc.data() as Map<String, dynamic>;
-                              courseCodes.add(courseCode);
-                            }
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 25),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Wrap(
-                                  children: courseCodes.map((code) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(right: 5),
-                                      child: FilterChip(
-                                        label: Text(code['courseCode']),
-                                        selected: _selectedCourse ==
-                                            code['courseCode'],
-                                        onSelected: (bool selected) {
-                                          setState(() {
-                                            _selectedCourse = selected
-                                                ? code['courseCode']
-                                                : '';
-                                            _selectedCourseId = selected
-                                                ? code['courseId']
-                                                : '';
-
-                                            if (_grpDescController.text.isNotEmpty &&
-                                                _grpNameController
-                                                    .text.isNotEmpty &&
-                                                _selectedCourse.isNotEmpty) {
-                                              primaryColor = selected
-                                                  ? const Color(0xff6377d4)
-                                                  : const Color(0xff939cc4);
-                                            } else {
-                                              primaryColor =
-                                                  const Color(0xff939cc4);
-                                            }
-
-                                            print(_selectedCourse);
-                                          });
-                                        },
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            );
-                          }
-                        },
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25),
+                        child: Consumer(
+                          builder: (context, ref, child) {
+                            return currentUserCourse.when(
+                                data: (currentCourses) {
+                              if (currentCourses.isEmpty) {
+                                return const Text(
+                                    "You have no enrolled courses.");
+                              } else {
+                                return Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Wrap(
+                                    children: currentCourses.map((completed) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 5),
+                                        child: FilterChip(
+                                          label: Text(completed.courseCode),
+                                          selected: selectedCourse ==
+                                              completed.courseCode,
+                                          onSelected: (bool selected) {
+                                            ref
+                                                .read(selectedCourseProvider
+                                                    .notifier)
+                                                .state = completed.courseCode;
+                                            ref
+                                                .read(selectedcourseIdProvider
+                                                    .notifier)
+                                                .state = completed.courseId;
+                                          },
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                );
+                              }
+                            }, error: (error, stackTrace) {
+                              return Center(
+                                child: Text('Error: $error'),
+                              );
+                            }, loading: () {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            });
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -180,21 +118,11 @@ class _CreateStudyGroupState extends State<CreateStudyGroup> {
                   ),
                   RoundedTextFieldTitle(
                     title: "Description",
-                    controller: _grpDescController,
+                    controller: _descriptionController,
                     hinttext:
                         "Let other students know about the purpose of the study group.",
                     onChange: (val) {
-                      if (_grpNameController.text.isNotEmpty &&
-                          val.isNotEmpty &&
-                          _selectedCourse.isNotEmpty) {
-                        setState(() {
-                          primaryColor = const Color(0xff6377d4);
-                        });
-                      } else {
-                        setState(() {
-                          primaryColor = const Color(0xff939cc4);
-                        });
-                      }
+                      ref.read(chatDescriptionProvider.notifier).state = val;
                     },
                   ),
                   const SizedBox(
@@ -202,9 +130,50 @@ class _CreateStudyGroupState extends State<CreateStudyGroup> {
                   ),
                   RoundedButton(
                     text: "Create Study Group",
-                    onTap: create,
+                    onTap: () async {
+                      final success =
+                          await ref.read(createGroupChatProvider).addStudyGroup(
+                                _nameController.text,
+                                _descriptionController.text,
+                                selectedCourse.toString(),
+                                courseId.toString(),
+                              );
+
+                      if (success) {
+                        _nameController.clear();
+                        _descriptionController.clear();
+                        ref.read(selectedCourseProvider.notifier).state = '';
+                        ref.read(selectedcourseIdProvider.notifier).state = '';
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return const CreateGroupChatDialog(
+                              confirm: null,
+                              content: "The group chat has been created",
+                              title: "Success",
+                              type: "Okay",
+                            );
+                          },
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return const CreateGroupChatDialog(
+                              confirm: null,
+                              content:
+                                  "There was an error creating the study group. Kindly try again.",
+                              title: "Failed",
+                              type: "Okay",
+                            );
+                          },
+                        );
+                      }
+                    },
                     margin: const EdgeInsets.symmetric(horizontal: 25),
-                    color: primaryColor,
+                    color: buttonColor
+                        ? const Color(0xff9494ff)
+                        : const Color(0xff939cc4),
                     textcolor: Theme.of(context).colorScheme.background,
                   ),
                 ],

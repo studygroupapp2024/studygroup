@@ -9,12 +9,14 @@ class CategoryModel {
   String iconPath;
   Color backgroundColor;
   VoidCallback? onTap;
+  String caption;
 
   CategoryModel({
     required this.name,
     required this.iconPath,
     required this.backgroundColor,
     required this.onTap,
+    required this.caption,
   });
 
   static List<CategoryModel> getCategories(BuildContext context) {
@@ -22,9 +24,10 @@ class CategoryModel {
 
     categories.add(
       CategoryModel(
-        name: "My Courses",
+        name: "Courses",
         iconPath: 'assets/icons/study-student_svgrepo.com.svg',
         backgroundColor: const Color.fromARGB(255, 222, 159, 172),
+        caption: "Check your courses",
         onTap: () {
           Navigator.push(
             context,
@@ -38,9 +41,10 @@ class CategoryModel {
 
     categories.add(
       CategoryModel(
-        name: "My Study Groups",
+        name: "Study Groups",
         iconPath: 'assets/icons/users-group_svgrepo.com.svg',
         backgroundColor: const Color.fromARGB(255, 222, 159, 172),
+        caption: "Communicate with your circle",
         onTap: () {
           Navigator.push(
             context,
@@ -54,7 +58,8 @@ class CategoryModel {
 
     categories.add(
       CategoryModel(
-        name: "Add Study Group",
+        name: "Create",
+        caption: "Lead the study group",
         iconPath:
             'assets/icons/book-shelf-books-education-learning-school-study_svgrepo.com.svg',
         backgroundColor: const Color.fromARGB(255, 222, 159, 172),
@@ -62,7 +67,7 @@ class CategoryModel {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const CreateStudyGroup(),
+              builder: (context) => CreateStudyGroup(),
             ),
           );
         },
@@ -71,7 +76,8 @@ class CategoryModel {
 
     categories.add(
       CategoryModel(
-        name: "Find Study Group",
+        caption: "Connect with other groups",
+        name: "Find",
         iconPath: 'assets/icons/search-phone_svgrepo.com.svg',
         backgroundColor: const Color.fromARGB(255, 222, 159, 172),
         onTap: () {
