@@ -64,7 +64,6 @@ class _FindPageState extends State<FindPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ChatPage(
-                          chatName: data["groupChatTitle"],
                           groupChatId: data["groupChatId"],
                         ),
                       ),

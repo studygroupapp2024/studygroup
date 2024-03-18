@@ -52,7 +52,7 @@ class GroupChatModel {
 
   factory GroupChatModel.fromMap(Map<String, dynamic> map) {
     return GroupChatModel(
-      docID: map['docID'] != null ? map['docID'] as String : null,
+      docID: map['chatId'] != null ? map['chatId'] as String : null,
       creatorId: map['creatorId'] as String,
       creatorName: map['creatorName'] as String,
       studyGroupTitle: map['studyGroupTitle'] as String,

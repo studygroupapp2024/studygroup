@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:study_buddy/structure/auth/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MemberRequest {
   final groupChat = FirebaseFirestore.instance.collection("study_groups");
   final userChat = FirebaseFirestore.instance.collection("users");
-
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   // request to join
   void requestToJoin(String chatId) {
     groupChat.doc(chatId).update({
-      'membersRequest': FieldValue.arrayUnion([AuthService().email]),
-      'membersRequestId': FieldValue.arrayUnion([AuthService().id]),
+      'membersRequest':
+          FieldValue.arrayUnion([_auth.currentUser!.displayName.toString()]),
+      'membersRequestId': FieldValue.arrayUnion([_auth.currentUser!.uid]),
     });
   }
 
@@ -18,7 +19,6 @@ class MemberRequest {
     String documentId,
     String userEmail,
     String userId,
-    String title,
     bool isAccepted,
   ) {
     if (isAccepted) {
@@ -41,7 +41,6 @@ class MemberRequest {
 
       var data = {
         "groupChatId": documentId,
-        "groupChatTitle": title,
       };
       userChat.doc(userId).collection("groupChats").add(data);
     } else {

@@ -1,13 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:study_buddy/components/containers/study_group_container.dart';
-import 'package:study_buddy/structure/auth/auth_service.dart';
 import 'package:study_buddy/structure/providers/groupchat_provider.dart';
 
 class FindStudyGroup extends ConsumerWidget {
   FindStudyGroup({super.key});
 
   final TextEditingController _controller = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // void requestToJoin(String chatId, groupTitle) async {
   @override
@@ -71,10 +72,10 @@ class FindStudyGroup extends ConsumerWidget {
                           title: groupChats.studyGroupTitle,
                           desc: groupChats.studyGroupDescription,
                           members: groupChats.members.length.toString(),
-                          identifier:
-                              membersRequestList.contains(AuthService().id)
-                                  ? "Pending Application"
-                                  : "Join",
+                          identifier: membersRequestList
+                                  .contains(_auth.currentUser!.uid)
+                              ? "Pending Application"
+                              : "Join",
                         );
                       },
                     );

@@ -4,6 +4,7 @@ class ChatBubble extends StatelessWidget {
   final Alignment alignment;
   final Color backgroundColor;
   final Color textColor;
+  final BorderRadiusGeometry? borderRadius;
 
   final String senderMessage;
   const ChatBubble({
@@ -12,6 +13,7 @@ class ChatBubble extends StatelessWidget {
     required this.senderMessage,
     required this.backgroundColor,
     required this.textColor,
+    required this.borderRadius,
   });
 
   @override
@@ -24,17 +26,18 @@ class ChatBubble extends StatelessWidget {
           padding: const EdgeInsets.only(
             right: 15,
             left: 15,
-            top: 10,
-            bottom: 10,
+            top: 13,
+            bottom: 13,
           ),
           decoration: BoxDecoration(
             color: backgroundColor,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: borderRadius,
           ),
           child: Text(
             senderMessage,
             style: TextStyle(
               color: textColor,
+              fontSize: 15,
             ),
           ),
         ),

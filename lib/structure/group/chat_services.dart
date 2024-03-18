@@ -14,8 +14,8 @@ class ChatService extends ChangeNotifier {
     final Timestamp timestamp = Timestamp.now();
 
     // create a new message
-    Message newMessage = Message(
-      senderID: currentUserId,
+    MessageModel newMessage = MessageModel(
+      senderId: currentUserId,
       senderEmail: curreUserEmail,
       groupChatId: groupChatid,
       message: message,

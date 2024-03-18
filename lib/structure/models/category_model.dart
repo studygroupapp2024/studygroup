@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:study_buddy/pages/home/create_study_group.dart';
-import 'package:study_buddy/pages/home/my_chat.dart';
 import 'package:study_buddy/pages/home/my_course.dart';
+import 'package:study_buddy/pages/home/my_groups.dart';
 import 'package:study_buddy/pages/home/search_study_group.dart';
 
 class CategoryModel {
@@ -49,7 +49,7 @@ class CategoryModel {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const FindPage(),
+              builder: (context) => FindPage(),
             ),
           );
         },
