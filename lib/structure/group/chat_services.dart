@@ -10,7 +10,9 @@ class ChatService extends ChangeNotifier {
   Future<void> sendMessage(String groupChatid, message) async {
     // get current user info
     final String currentUserId = _firebaseAuth.currentUser!.uid;
-    final String curreUserEmail = _firebaseAuth.currentUser!.email.toString();
+    final String curreUserEmail =
+        _firebaseAuth.currentUser!.displayName.toString();
+    final String currentPhoto = _firebaseAuth.currentUser!.photoURL!;
     final Timestamp timestamp = Timestamp.now();
 
     // create a new message
@@ -19,6 +21,7 @@ class ChatService extends ChangeNotifier {
       senderEmail: curreUserEmail,
       groupChatId: groupChatid,
       message: message,
+      senderImage: currentPhoto,
       timestamp: timestamp,
     );
 
@@ -28,6 +31,13 @@ class ChatService extends ChangeNotifier {
         .doc(groupChatid)
         .collection("messages")
         .add(newMessage.toMap());
+
+    // add GroupChat LastMessage, LastMessageSender, and LastMessageTimeSent
+    await _firestore.collection("study_groups").doc(groupChatid).update({
+      "lastMessage": message,
+      "lastMessageSender": curreUserEmail,
+      "lastMessageTimeSent": timestamp,
+    });
   }
 
   // get messages

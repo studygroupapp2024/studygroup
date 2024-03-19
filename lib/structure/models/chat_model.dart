@@ -6,6 +6,7 @@ class MessageModel {
   final String senderEmail;
   final String groupChatId;
   final String message;
+  final String senderImage;
   final Timestamp timestamp;
 
   MessageModel({
@@ -13,6 +14,7 @@ class MessageModel {
     required this.senderEmail,
     required this.groupChatId,
     required this.message,
+    required this.senderImage,
     required this.timestamp,
   });
 
@@ -22,6 +24,7 @@ class MessageModel {
       'senderEmail': senderEmail,
       'groupChatId': groupChatId,
       'message': message,
+      'senderImage': senderImage,
       'timestamp': timestamp,
     };
   }
@@ -32,9 +35,11 @@ class MessageModel {
       senderEmail: map['senderEmail'] as String,
       groupChatId: map['groupChatId'] as String,
       message: map['message'] as String,
+      senderImage: map['groupChatId'] as String,
       timestamp: Timestamp.fromDate(DateTime.parse(map['timestamp'] as String)),
     );
   }
+
   factory MessageModel.fromSnapshot(
       DocumentSnapshot<Map<String, dynamic>> doc) {
     return MessageModel(
@@ -42,7 +47,39 @@ class MessageModel {
       senderEmail: doc['senderEmail'],
       groupChatId: doc['groupChatId'],
       message: doc['message'],
+      senderImage: doc['senderImage'],
       timestamp: doc['timestamp'],
     );
   }
 }
+
+  // Map<String, dynamic> toMap() {
+  //   return <String, dynamic>{
+  //     'senderId': senderId,
+  //     'senderEmail': senderEmail,
+  //     'groupChatId': groupChatId,
+  //     'message': message,
+  //     'senderImage': senderImage,
+  //     'timestamp': timestamp,
+  //   };
+  // }
+
+  // factory MessageModel.fromMap(Map<String, dynamic> map) {
+  //   return MessageModel(
+  //     senderId: map['senderId'] as String,
+  //     senderEmail: map['senderEmail'] as String,
+  //     groupChatId: map['groupChatId'] as String,
+  //     message: map['message'] as String,
+  //     timestamp: Timestamp.fromDate(DateTime.parse(map['timestamp'] as String)),
+  //   );
+  // }
+  // factory MessageModel.fromSnapshot(
+  //     DocumentSnapshot<Map<String, dynamic>> doc) {
+  //   return MessageModel(
+  //     senderId: doc['senderId'],
+  //     senderEmail: doc['senderEmail'],
+  //     groupChatId: doc['groupChatId'],
+  //     message: doc['message'],
+  //     timestamp: doc['timestamp'],
+  //   );
+  // }

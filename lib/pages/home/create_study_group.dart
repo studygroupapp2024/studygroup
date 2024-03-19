@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:study_buddy/components/buttons/rounded_button.dart';
@@ -12,10 +13,12 @@ class CreateStudyGroup extends ConsumerWidget {
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUserCourse =
-        ref.watch(currentStudentCoursesInformationProvider);
+    final currentUserCourse = ref.watch(
+      currentStudentCoursesInformationProvider(_auth.currentUser!.uid),
+    );
     final selectedCourse = ref.watch(selectedCourseProvider);
     final courseId = ref.watch(selectedcourseIdProvider);
 

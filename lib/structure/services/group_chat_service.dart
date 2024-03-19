@@ -29,6 +29,9 @@ class GroupChat {
           membersId: [_auth.currentUser!.uid],
           membersRequest: [],
           membersRequestId: [],
+          lastMessage: '',
+          lastMessageSender: '',
+          lastMessageTimeSent: null,
         );
 
         // groupChat.add(newGroupChat.toMap());

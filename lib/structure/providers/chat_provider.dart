@@ -6,7 +6,7 @@ import 'package:study_buddy/structure/models/chat_model.dart';
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 final studyGroupMessageProvider =
-    StreamProvider.autoDispose.family<List<MessageModel>, String>(
+    StreamProvider.family<List<MessageModel>, String>(
   (ref, chatId) async* {
     final chats = _firestore
         .collection("study_groups")

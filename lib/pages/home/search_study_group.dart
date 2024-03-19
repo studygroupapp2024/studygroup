@@ -51,8 +51,9 @@ class FindStudyGroup extends ConsumerWidget {
           Expanded(
             child: Consumer(
               builder: (context, ref, child) {
-                final multipleGroupChatProvider =
-                    ref.watch(selectedGroupChatInformationProvider);
+                final multipleGroupChatProvider = ref.watch(
+                  selectedGroupChatInformationProvider(_auth.currentUser!.uid),
+                );
                 return multipleGroupChatProvider.when(
                   data: (groupchats) {
                     return ListView.builder(

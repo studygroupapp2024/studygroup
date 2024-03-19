@@ -1,18 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:study_buddy/structure/models/group_chat_model.dart';
-import 'package:study_buddy/structure/models/users_groups_model.dart';
 import 'package:study_buddy/structure/services/group_chat_service.dart';
 import 'package:study_buddy/structure/services/member_request_service.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-final FirebaseAuth _auth = FirebaseAuth.instance;
+
 // ============================ STREAM PROVIDERS =============================
 
 // getting a specific Data based on the GroupChat ID
-final singleGroupChatInformationProvider = StreamProvider.autoDispose
-    .family<GroupChatModel, String>((ref, chatId) async* {
+final singleGroupChatInformationProvider =
+    StreamProvider.family<GroupChatModel, String>((ref, chatId) async* {
   final document = _firestore.collection("study_groups").doc(chatId);
   yield* document.snapshots().map(
         GroupChatModel.fromSnapshot,
@@ -21,7 +19,7 @@ final singleGroupChatInformationProvider = StreamProvider.autoDispose
 
 // collect to all the document
 final multipleGroupChatInformationProvider =
-    StreamProvider.autoDispose<List<GroupChatModel>>((ref) async* {
+    StreamProvider<List<GroupChatModel>>((ref) async* {
   final getStudyGroups = _firestore.collection("study_groups").snapshots().map(
         (querySnapshot) => querySnapshot.docs
             .map(
@@ -33,7 +31,7 @@ final multipleGroupChatInformationProvider =
 });
 
 final selectedGroupChatInformationProvider =
-    StreamProvider.autoDispose<List<GroupChatModel>>((ref) async* {
+    StreamProvider.family<List<GroupChatModel>, String>((ref, userId) async* {
   final searchQuery = ref.watch(searchQueryProvider);
 
   final getStudyGroups = _firestore.collection("study_groups").snapshots().map(
@@ -43,7 +41,7 @@ final selectedGroupChatInformationProvider =
             )
             .where(
               (group) =>
-                  !group.membersId.contains(_auth.currentUser!.uid) &&
+                  !group.membersId.contains(userId) &&
                   (group.studyGroupTitle
                           .toLowerCase()
                           .contains(searchQuery.toLowerCase()) ||
@@ -58,34 +56,49 @@ final selectedGroupChatInformationProvider =
 });
 
 // get User Study Groups
-final userChatIdsProvider =
-    StreamProvider.autoDispose.family<List<UserGroupModel>, String>(
+final userChatIdsProvider = StreamProvider.family<List<GroupChatModel>, String>(
   (ref, userId) async* {
-    final ids = _firestore
-        .collection("users")
-        .doc(userId)
-        .collection("groupChats")
-        .snapshots()
-        .map(
-          (querySnapshot) => querySnapshot.docs
-              .map(
-                (ids) => UserGroupModel.fromSnapshot(ids),
-              )
-              .toList(),
-        );
-    yield* ids;
+    final userStudyGroups =
+        _firestore.collection("study_groups").snapshots().map(
+              (querySnapshot) => querySnapshot.docs
+                  .map(
+                    (snapshot) => GroupChatModel.fromSnapshot(snapshot),
+                  )
+                  .where((group) => group.membersId.contains(userId))
+                  .toList(),
+            );
+    yield* userStudyGroups;
   },
 );
 
+// get User Study Groups
+// final userChatIdsProvider = StreamProvider.family<List<UserGroupModel>, String>(
+//   (ref, userId) async* {
+//     final ids = _firestore
+//         .collection("users")
+//         .doc(userId)
+//         .collection("groupChats")
+//         .snapshots()
+//         .map(
+//           (querySnapshot) => querySnapshot.docs
+//               .map(
+//                 (ids) => UserGroupModel.fromSnapshot(ids),
+//               )
+//               .toList(),
+//         );
+//     yield* ids;
+//   },
+// );
 // ============================ STATE PROVIDERS =============================
 
-final groupChatMemberRequestProvider = StateProvider<MemberRequest>((ref) {
+final groupChatMemberRequestProvider =
+    StateProvider.autoDispose<MemberRequest>((ref) {
   return MemberRequest();
 });
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
-final createGroupChatProvider = StateProvider<GroupChat>((ref) {
+final createGroupChatProvider = StateProvider.autoDispose<GroupChat>((ref) {
   return GroupChat();
 });
 

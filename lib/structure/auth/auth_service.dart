@@ -87,6 +87,8 @@ class AuthService {
     await _firestore.collection('users').doc(userCredential.user!.uid).set({
       'uid': userCredential.user!.uid,
       'email': userCredential.user!.email,
+      'name': userCredential.user!.displayName,
+      'imageUrl': userCredential.user!.photoURL,
     });
 
     return userCredential;
