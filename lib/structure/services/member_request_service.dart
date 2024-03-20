@@ -5,9 +5,10 @@ class MemberRequest {
   final groupChat = FirebaseFirestore.instance.collection("study_groups");
   final userChat = FirebaseFirestore.instance.collection("users");
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   // request to join
-  void requestToJoin(String chatId) {
-    groupChat.doc(chatId).update({
+  Future<void> requestToJoin(String chatId) async {
+    await groupChat.doc(chatId).update({
       'membersRequest':
           FieldValue.arrayUnion([_auth.currentUser!.displayName.toString()]),
       'membersRequestId': FieldValue.arrayUnion([_auth.currentUser!.uid]),
@@ -15,14 +16,14 @@ class MemberRequest {
   }
 
   // Update the Study Group Member List
-  void acceptOrreject(
+  Future<void> acceptOrreject(
     String documentId,
     String userEmail,
     String userId,
     bool isAccepted,
-  ) {
+  ) async {
     if (isAccepted) {
-      groupChat.doc(documentId).update(
+      await groupChat.doc(documentId).update(
         {
           'members': FieldValue.arrayUnion(
             [userEmail],
@@ -42,9 +43,9 @@ class MemberRequest {
       var data = {
         "groupChatId": documentId,
       };
-      userChat.doc(userId).collection("groupChats").add(data);
+      await userChat.doc(userId).collection("groupChats").add(data);
     } else {
-      groupChat.doc(documentId).update(
+      await groupChat.doc(documentId).update(
         {
           'membersRequest': FieldValue.arrayRemove(
             [userEmail],

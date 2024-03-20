@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:study_buddy/structure/models/group_chat_model.dart';
 import 'package:study_buddy/structure/services/group_chat_service.dart';
@@ -58,37 +59,51 @@ final selectedGroupChatInformationProvider =
 // get User Study Groups
 final userChatIdsProvider = StreamProvider.family<List<GroupChatModel>, String>(
   (ref, userId) async* {
-    final userStudyGroups =
-        _firestore.collection("study_groups").snapshots().map(
-              (querySnapshot) => querySnapshot.docs
-                  .map(
-                    (snapshot) => GroupChatModel.fromSnapshot(snapshot),
-                  )
-                  .where((group) => group.membersId.contains(userId))
-                  .toList(),
-            );
+    final userStudyGroups = _firestore
+        .collection("study_groups")
+        .orderBy(
+          'lastMessageTimeSent',
+          descending: false,
+        )
+        .snapshots()
+        .map(
+          (querySnapshot) => querySnapshot.docs
+              .map(
+                (snapshot) => GroupChatModel.fromSnapshot(snapshot),
+              )
+              .where((group) => group.membersId.contains(userId))
+              .toList(),
+        );
     yield* userStudyGroups;
   },
 );
 
-// get User Study Groups
-// final userChatIdsProvider = StreamProvider.family<List<UserGroupModel>, String>(
-//   (ref, userId) async* {
-//     final ids = _firestore
-//         .collection("users")
-//         .doc(userId)
-//         .collection("groupChats")
-//         .snapshots()
-//         .map(
-//           (querySnapshot) => querySnapshot.docs
-//               .map(
-//                 (ids) => UserGroupModel.fromSnapshot(ids),
-//               )
-//               .toList(),
-//         );
-//     yield* ids;
-//   },
-// );
+// check if there is a member request
+// StreamProvider<bool> userHasStudyGroupRequest = StreamProvider<bool>((ref) {
+//   return _firestore
+//       .collection("study_groups")
+//       .where('membersId', arrayContains: FirebaseAuth.instance.currentUser!.uid)
+//       .snapshots()
+//       .map((querySnapshot) => querySnapshot.docs
+//           .any((snapshot) => (snapshot.data()['studyGroupTitle'] == null)));
+// });
+
+final userHasStudyGroupRequest = StreamProvider.autoDispose<bool>(
+  (ref) {
+    print("The array is NOT EMPTY?: ${FirebaseAuth.instance.currentUser!.uid}");
+    return _firestore
+        .collection("study_groups")
+        .where('membersId',
+            arrayContains: FirebaseAuth.instance.currentUser!.uid)
+        .snapshots()
+        .map((querySnapshot) => querySnapshot.docs
+            .map(
+              (snapshot) => GroupChatModel.fromSnapshot(snapshot),
+            )
+            .any((group) => group.membersRequestId.isNotEmpty));
+  },
+);
+
 // ============================ STATE PROVIDERS =============================
 
 final groupChatMemberRequestProvider =

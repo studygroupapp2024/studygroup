@@ -25,7 +25,7 @@ class GroupChat {
           studyGroupCourseName: course,
           studyGroupCourseId: courseId,
           timestamp: timestamp,
-          members: [_auth.currentUser!.displayName.toString()],
+          members: _roommembers(), //  [_auth.currentUser!.displayName],
           membersId: [_auth.currentUser!.uid],
           membersRequest: [],
           membersRequestId: [],
@@ -58,5 +58,14 @@ class GroupChat {
     } catch (e) {
       return false;
     }
+  }
+
+  RoomMembers _roommembers() {
+    return RoomMembers(
+      imageUrl: _auth.currentUser!.photoURL.toString(),
+      lastReadChat: '',
+      name: _auth.currentUser!.displayName.toString(),
+      uid: _auth.currentUser!.uid,
+    );
   }
 }

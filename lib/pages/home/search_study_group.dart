@@ -72,7 +72,7 @@ class FindStudyGroup extends ConsumerWidget {
                           },
                           title: groupChats.studyGroupTitle,
                           desc: groupChats.studyGroupDescription,
-                          members: groupChats.members.length.toString(),
+                          members: groupChats.membersId.length.toString(),
                           identifier: membersRequestList
                                   .contains(_auth.currentUser!.uid)
                               ? "Pending Application"

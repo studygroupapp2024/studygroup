@@ -25,6 +25,7 @@ class FindPage extends ConsumerWidget {
                 itemCount: ids.length,
                 itemBuilder: (context, index) {
                   final chatIds = ids[index];
+                  print("OUTPUTS: $chatIds");
                   final String fullName = chatIds.lastMessageSender;
                   final List<String> nameParts = fullName.split(' ');
                   final String firstName = nameParts[0];

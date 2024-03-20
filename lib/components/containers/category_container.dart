@@ -6,12 +6,14 @@ class Category extends StatelessWidget {
   final String iconPath;
   final void Function()? onTap;
   final String caption;
+  final String request;
 
   const Category(
       {super.key,
       required this.text,
       required this.iconPath,
       required this.caption,
+      required this.request,
       required this.onTap});
 
   @override
@@ -66,6 +68,7 @@ class Category extends StatelessWidget {
                   ),
                 ),
               ),
+              Text(request),
             ],
           ),
         ),

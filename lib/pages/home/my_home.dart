@@ -1,34 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:study_buddy/components/containers/category_container.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:study_buddy/pages/home/my_profile.dart';
-import 'package:study_buddy/structure/models/category_model.dart';
+import 'package:study_buddy/structure/providers/groupchat_provider.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomePage extends ConsumerWidget {
+  HomePage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePage();
-}
-
-class _HomePage extends State<HomePage> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  List<CategoryModel> categories = [];
-
-  void _getCategories() {
-    categories = CategoryModel.getCategories(context);
-  }
-
   @override
-  void initState() {
-    _getCategories();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    _getCategories();
+  Widget build(BuildContext context, WidgetRef ref) {
+    //   getCategories();
+    final checkMemberRequest = ref.watch(userHasStudyGroupRequest);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home"),
@@ -137,22 +121,46 @@ class _HomePage extends State<HomePage> {
                   const SizedBox(
                     height: 15,
                   ),
-                  Expanded(
-                    child: GridView.builder(
-                      itemCount: categories.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2),
-                      itemBuilder: (context, index) {
-                        return Category(
-                          text: categories[index].name,
-                          iconPath: categories[index].iconPath,
-                          onTap: categories[index].onTap,
-                          caption: categories[index].caption,
-                        );
-                      },
-                    ),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      return checkMemberRequest.when(
+                        data: (value) {
+                          print("The array is NOT EMPTY?: $value");
+                          print(
+                              "The array is NOT EMPTY?: ${_firebaseAuth.currentUser!.uid}");
+                          return value
+                              ? const Text('User has a study group request')
+                              : const Text('User has no study group request');
+                        },
+                        error: (error, stackTrace) {
+                          return Center(
+                            child: Text('Error: $error'),
+                          );
+                        },
+                        loading: () {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                      );
+                    },
                   ),
+
+                  // child: GridView.builder(
+                  //   itemCount: categories.length,
+                  //   gridDelegate:
+                  //       const SliverGridDelegateWithFixedCrossAxisCount(
+                  //           crossAxisCount: 2),
+                  //   itemBuilder: (context, index) {
+                  //     return Category(
+                  //       text: categories[index].name,
+                  //       iconPath: categories[index].iconPath,
+                  //       onTap: categories[index].onTap,
+                  //       caption: categories[index].caption,
+                  //       request: 'Empty',
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
             ),
@@ -162,3 +170,15 @@ class _HomePage extends State<HomePage> {
     );
   }
 }
+
+// List<CategoryModel> categories = [];
+
+  // void _getCategories() {
+  //   categories = CategoryModel.getCategories(context);
+  // }
+
+  // @override
+  // void initState() {
+  //   _getCategories();
+  //   super.initState();
+  // }

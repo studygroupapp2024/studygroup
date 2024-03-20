@@ -25,9 +25,9 @@ class Members extends ConsumerWidget {
               data: (membersList) {
                 return ListView.builder(
                   shrinkWrap: true,
-                  itemCount: membersList.members.length,
+                  itemCount: membersList.membersId.length,
                   itemBuilder: (context, index) {
-                    final members = membersList.members[index];
+                    final members = membersList.membersId[index];
                     final membersId = membersList.membersId[index];
                     final creator = membersList.creatorId;
 

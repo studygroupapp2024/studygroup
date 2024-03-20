@@ -1,7 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// GROUPCHAT MODEL
 class GroupChatModel {
   String? docID;
   final String creatorId;
@@ -11,7 +10,7 @@ class GroupChatModel {
   final String studyGroupCourseName;
   final String studyGroupCourseId;
   final Timestamp timestamp;
-  final List<dynamic> members;
+  final RoomMembers members; //Room Members //List<dynamic>
   final List<dynamic> membersId;
   final List<dynamic> membersRequest;
   final List<dynamic> membersRequestId;
@@ -37,8 +36,6 @@ class GroupChatModel {
     required this.lastMessageTimeSent,
   });
 
-  get reference => null;
-
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'chatId': docID,
@@ -49,7 +46,7 @@ class GroupChatModel {
       'studyGroupCourseName': studyGroupCourseName,
       'studyGroupCourseId': studyGroupCourseId,
       'createdAt': timestamp,
-      'members': members,
+      'members': members.toMap(), //.toMap()
       'membersId': membersId,
       'membersRequest': membersRequest,
       'membersRequestId': membersRequestId,
@@ -69,7 +66,13 @@ class GroupChatModel {
       studyGroupCourseName: map['studyGroupCourseName'] as String,
       studyGroupCourseId: map['studyGroupCourseId'] as String,
       timestamp: Timestamp.fromDate(DateTime.parse(map['createdAt'] as String)),
-      members: List<dynamic>.from((map['members'] as List<dynamic>)),
+      members: RoomMembers(
+        imageUrl: map['members']["F7MyU5Ikk7c3cKUvrpjHvdwAwM13"]['imageUrl'],
+        lastReadChat: map['members']["F7MyU5Ikk7c3cKUvrpjHvdwAwM13"]
+            ['lastReadChat'],
+        name: map['members']["F7MyU5Ikk7c3cKUvrpjHvdwAwM13"]['name'],
+        uid: map['members']["F7MyU5Ikk7c3cKUvrpjHvdwAwM13"]['uid'],
+      ),
       membersId: List<dynamic>.from((map['membersId'] as List<dynamic>)),
       membersRequest:
           List<dynamic>.from((map['membersRequest'] as List<dynamic>)),
@@ -95,13 +98,63 @@ class GroupChatModel {
       studyGroupCourseName: doc['studyGroupCourseName'],
       studyGroupCourseId: doc['studyGroupCourseId'],
       timestamp: doc['createdAt'],
-      members: doc['members'],
+      members: RoomMembers(
+        imageUrl: doc['members']["F7MyU5Ikk7c3cKUvrpjHvdwAwM13"]['imageUrl'],
+        lastReadChat: doc['members']["F7MyU5Ikk7c3cKUvrpjHvdwAwM13"]
+            ['lastReadChat'],
+        name: doc['members']["F7MyU5Ikk7c3cKUvrpjHvdwAwM13"]['name'],
+        uid: doc['members']["F7MyU5Ikk7c3cKUvrpjHvdwAwM13"]['uid'],
+      ),
       membersId: doc['membersId'],
       membersRequest: doc['membersRequest'],
       membersRequestId: doc['membersRequestId'],
       lastMessage: doc['lastMessage'],
       lastMessageSender: doc['lastMessageSender'],
       lastMessageTimeSent: doc['lastMessageTimeSent'],
+    );
+  }
+}
+
+// ROOM MEMBERS MODEL
+class RoomMembers {
+  final String imageUrl;
+  final String lastReadChat; // lastReadChat is now nullable
+  final String name;
+  final String uid;
+
+  RoomMembers({
+    required this.imageUrl,
+    required this.lastReadChat,
+    required this.name,
+    required this.uid,
+  });
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      uid: {
+        'imageUrl': imageUrl,
+        'lastReadChat': lastReadChat,
+        'name': name,
+        'uid': uid,
+      },
+    };
+  }
+
+  factory RoomMembers.fromMap(Map<String, dynamic> map) {
+    return RoomMembers(
+      imageUrl: map['imageUrl'] as String,
+      lastReadChat: map['lastReadChat'] as String, // Nullable
+      name: map['name'] as String, // Nullable
+      uid: map['uid'] as String,
+    );
+  }
+
+  factory RoomMembers.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> doc) {
+    return RoomMembers(
+      imageUrl: doc['imageUrl'],
+      lastReadChat: doc['lastReadChat'], // Provide a default value if null
+      name: doc['name'], // Provide a default value if null
+      uid: doc['uid'],
     );
   }
 }
