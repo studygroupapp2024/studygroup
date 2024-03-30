@@ -1,4 +1,3 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,23 +5,27 @@ import 'package:intl/intl.dart';
 import 'package:study_buddy/components/containers/chat_bubble.dart';
 import 'package:study_buddy/components/textfields/chat_textfield.dart';
 import 'package:study_buddy/pages/chat/chat_info.dart';
+import 'package:study_buddy/pages/chat/special_message.dart';
 import 'package:study_buddy/structure/group/chat_services.dart';
 import 'package:study_buddy/structure/providers/chat_provider.dart';
-import 'package:study_buddy/structure/services/storage_service.dart';
+import 'package:study_buddy/structure/providers/storage_provider.dart';
+import 'package:study_buddy/structure/providers/university_provider.dart';
 
 class ChatPage extends ConsumerWidget {
   final String groupChatId;
   final String title;
   final String creator;
+  final String desc;
+  final String dateCreated;
 
   ChatPage({
     super.key,
     required this.groupChatId,
     required this.title,
     required this.creator,
+    required this.desc,
+    required this.dateCreated,
   });
-
-  final Storage _storage = Storage();
 
   final TextEditingController _messageController = TextEditingController();
 
@@ -30,11 +33,12 @@ class ChatPage extends ConsumerWidget {
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  void sendMessage() async {
+  void sendMessage(String institutionId) async {
     if (_messageController.text.isNotEmpty) {
       // send message
-      await _chatService.sendMessage(groupChatId, _messageController.text);
-
+      var chat = "chat";
+      await _chatService.sendMessage(
+          groupChatId, _messageController.text, chat, "", institutionId);
       _messageController.clear();
     }
   }
@@ -61,6 +65,9 @@ class ChatPage extends ConsumerWidget {
                     builder: (context) => ChatInfo(
                       groupChatId: groupChatId,
                       creator: creator,
+                      groupChatTitle: title,
+                      groupChatDescription: desc,
+                      dateCreated: dateCreated,
                     ),
                   ),
                 );
@@ -97,17 +104,36 @@ class ChatPage extends ConsumerWidget {
                                   firstName.substring(0, 1).toUpperCase() +
                                       firstName.substring(1).toLowerCase();
                               return Padding(
-                                padding: const EdgeInsets.only(left: 10),
+                                padding:
+                                    const EdgeInsets.only(left: 10, right: 10),
                                 child: Row(
-                                  mainAxisAlignment: (messageInfo.senderId ==
-                                          _firebaseAuth.currentUser!.uid)
+                                  mainAxisAlignment: messageInfo.senderId ==
+                                              _firebaseAuth.currentUser!.uid &&
+                                          messageInfo.type == "chat"
                                       ? MainAxisAlignment.end
-                                      : MainAxisAlignment.start,
+                                      : messageInfo.senderId ==
+                                                  _firebaseAuth
+                                                      .currentUser!.uid &&
+                                              messageInfo.type == "special"
+                                          ? MainAxisAlignment.end
+                                          : messageInfo.senderId !=
+                                                      _firebaseAuth
+                                                          .currentUser!.uid &&
+                                                  messageInfo.type == "chat"
+                                              ? MainAxisAlignment.start
+                                              : MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     if (messageInfo.senderId !=
-                                        _firebaseAuth.currentUser!.uid)
+                                                _firebaseAuth
+                                                    .currentUser!.uid &&
+                                            messageInfo.type == "chat" ||
+                                        messageInfo.senderId !=
+                                                _firebaseAuth
+                                                    .currentUser!.uid &&
+                                            messageInfo.type == "special")
                                       Align(
-                                        alignment: Alignment.centerLeft,
+                                        alignment: Alignment.topRight,
                                         child: Stack(
                                           children: [
                                             CircleAvatar(
@@ -135,7 +161,9 @@ class ChatPage extends ConsumerWidget {
                                           : CrossAxisAlignment.start,
                                       children: [
                                         if (messageInfo.senderId !=
-                                            _firebaseAuth.currentUser!.uid)
+                                                _firebaseAuth
+                                                    .currentUser!.uid &&
+                                            messageInfo.type == "chat")
                                           Padding(
                                             padding: const EdgeInsets.only(
                                               left: 10,
@@ -166,10 +194,15 @@ class ChatPage extends ConsumerWidget {
                                               ],
                                             ),
                                           ),
-                                        const SizedBox(
-                                          height: 3,
-                                        ),
                                         ChatBubble(
+                                          textAlign:
+                                              messageInfo.type == "announcement"
+                                                  ? TextAlign.center
+                                                  : TextAlign.start,
+                                          fontSize:
+                                              messageInfo.type == "announcement"
+                                                  ? 12
+                                                  : 16,
                                           borderRadius: messageInfo.senderId ==
                                                   _firebaseAuth.currentUser!.uid
                                               ? const BorderRadius.only(
@@ -189,28 +222,97 @@ class ChatPage extends ConsumerWidget {
                                                       Radius.circular(20),
                                                 ),
                                           alignment: messageInfo.senderId ==
-                                                  _firebaseAuth.currentUser!.uid
+                                                      _firebaseAuth
+                                                          .currentUser!.uid &&
+                                                  messageInfo.type == "chat"
                                               ? Alignment.centerRight
-                                              : Alignment.centerLeft,
-                                          senderMessage: messageInfo.message,
+                                              : messageInfo.senderId !=
+                                                          _firebaseAuth
+                                                              .currentUser!
+                                                              .uid &&
+                                                      messageInfo.type == "chat"
+                                                  ? Alignment.centerLeft
+                                                  : Alignment.center,
+                                          senderMessage:
+                                              messageInfo.type == "special"
+                                                  ? messageInfo.message +
+                                                      messageInfo.downloadUrl
+                                                          .toString()
+                                                  : messageInfo.message,
                                           backgroundColor: messageInfo
-                                                      .senderId ==
-                                                  _firebaseAuth.currentUser!.uid
+                                                              .senderId ==
+                                                          _firebaseAuth
+                                                              .currentUser!
+                                                              .uid &&
+                                                      messageInfo.type ==
+                                                          "chat" ||
+                                                  messageInfo.senderId ==
+                                                          _firebaseAuth
+                                                              .currentUser!
+                                                              .uid &&
+                                                      messageInfo.type ==
+                                                          "special"
                                               ? Theme.of(context)
                                                   .colorScheme
                                                   .tertiaryContainer
-                                              : Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
+                                              : messageInfo.senderId !=
+                                                          _firebaseAuth
+                                                              .currentUser!
+                                                              .uid &&
+                                                      messageInfo.type == "chat"
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary
+                                                  : Theme.of(context)
+                                                      .colorScheme
+                                                      .background,
                                           textColor: messageInfo.senderId ==
-                                                  _firebaseAuth.currentUser!.uid
+                                                          _firebaseAuth
+                                                              .currentUser!
+                                                              .uid &&
+                                                      messageInfo.type ==
+                                                          "chat" ||
+                                                  messageInfo.senderId ==
+                                                          _firebaseAuth
+                                                              .currentUser!
+                                                              .uid &&
+                                                      messageInfo.type ==
+                                                          "special"
                                               ? Theme.of(context)
                                                   .colorScheme
                                                   .background
-                                              : Theme.of(context)
-                                                  .colorScheme
-                                                  .background,
+                                              : messageInfo.senderId !=
+                                                          _firebaseAuth
+                                                              .currentUser!
+                                                              .uid &&
+                                                      messageInfo.type == "chat"
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .inversePrimary
+                                                  : Theme.of(context)
+                                                      .colorScheme
+                                                      .primary,
+                                          onTap: messageInfo.type == "special"
+                                              ? () {
+                                                  ref
+                                                      .read(uploadFileProvider)
+                                                      .downloadFile(
+                                                        context,
+                                                        messageInfo.downloadUrl
+                                                            .toString(),
+                                                        "errrr.png",
+                                                      );
+                                                }
+                                              : null,
                                         ),
+                                        messageInfo.senderId !=
+                                                _firebaseAuth.currentUser!.uid
+                                            ? const SizedBox(
+                                                height: 6,
+                                              )
+                                            : const SizedBox(
+                                                height: 3,
+                                              ),
                                       ],
                                     ),
                                   ],
@@ -242,32 +344,17 @@ class ChatPage extends ConsumerWidget {
                 child: Row(
                   children: [
                     IconButton(
-                      onPressed: () async {
-                        final result = await FilePicker.platform.pickFiles(
-                          allowMultiple: false,
-                          type: FileType.custom,
-                          allowedExtensions: ['jpg', 'png'],
-                        );
-
-                        if (result == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("No item has been selected."),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SendSpecialMessage(
+                              groupChatId: groupChatId,
                             ),
-                          );
-                          return;
-                        }
-                        final path = result.files.single.path;
-                        final filename = result.files.single.name;
-
-                        print(path);
-                        print(filename);
-
-                        _storage.uploadFile(path!, filename).then(
-                              (value) => print("Done"),
-                            );
+                          ),
+                        );
                       },
-                      icon: const Icon(Icons.upload_file),
+                      icon: const Icon(Icons.add_circle_outline_outlined),
                     ),
                     Expanded(
                       child: ChatTextField(
@@ -277,8 +364,12 @@ class ChatPage extends ConsumerWidget {
                       ),
                     ),
                     IconButton(
-                      onPressed: () {
-                        sendMessage();
+                      onPressed: () async {
+                        sendMessage(
+                          await ref
+                              .watch(institutionIdProviderBasedOnUser)
+                              .getUniversityBasedId(),
+                        );
                       },
                       icon: const Icon(Icons.send),
                     ),

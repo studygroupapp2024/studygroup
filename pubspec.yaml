@@ -19,8 +19,15 @@ dependencies:
   file_picker: ^6.2.0
   firebase_storage: ^11.6.10
   intl: ^0.19.0
-
-
+  uuid: ^4.3.3
+  firebase_messaging: ^14.7.20
+  googleapis_auth: ^1.5.1
+  awesome_notifications: ^0.9.3+1
+  smooth_page_indicator: ^1.1.0
+  open_file: ^3.3.2
+  dio: ^5.4.2+1
+  path_provider: ^2.1.2
+  permission_handler: ^11.3.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

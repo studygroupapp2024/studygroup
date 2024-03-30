@@ -22,6 +22,7 @@ class RoundedTextFieldTitle extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(
               title,
+              style: const TextStyle(fontSize: 20),
             ),
           ),
           const SizedBox(

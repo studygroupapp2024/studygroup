@@ -2,7 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:study_buddy/components/containers/study_group_container.dart';
+import 'package:study_buddy/components/no_data_holder.dart';
+import 'package:study_buddy/pages/home/create_study_group.dart';
 import 'package:study_buddy/structure/providers/groupchat_provider.dart';
+import 'package:study_buddy/structure/providers/university_provider.dart';
 
 class FindStudyGroup extends ConsumerWidget {
   FindStudyGroup({super.key});
@@ -56,30 +59,55 @@ class FindStudyGroup extends ConsumerWidget {
                 );
                 return multipleGroupChatProvider.when(
                   data: (groupchats) {
-                    return ListView.builder(
-                      itemCount: groupchats.length,
-                      itemBuilder: (context, index) {
-                        final groupChats = groupchats[index];
-                        final membersRequestList = groupChats.membersRequestId
-                            .map((e) => e as String)
-                            .toList();
-
-                        return StudyGroupContainer(
-                          onTap: () {
-                            ref
-                                .read(groupChatMemberRequestProvider)
-                                .requestToJoin(groupChats.docID.toString());
+                    if (groupchats.isEmpty) {
+                      return NoContent(
+                          icon:
+                              'assets/icons/book-shelf-books-education-learning-school-study_svgrepo.com.svg',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CreateStudyGroup(),
+                              ),
+                            );
                           },
-                          title: groupChats.studyGroupTitle,
-                          desc: groupChats.studyGroupDescription,
-                          members: groupChats.membersId.length.toString(),
-                          identifier: membersRequestList
-                                  .contains(_auth.currentUser!.uid)
-                              ? "Pending Application"
-                              : "Join",
-                        );
-                      },
-                    );
+                          description:
+                              "There is no study group available for now. Do you want to lead one?",
+                          buttonText: "Create Study Group");
+                    } else {
+                      return ListView.builder(
+                        itemCount: groupchats.length,
+                        itemBuilder: (context, index) {
+                          final groupChats = groupchats[index];
+                          final membersRequestList = groupChats.membersRequestId
+                              .map((e) => e as String)
+                              .toList();
+
+                          return StudyGroupContainer(
+                            onTap: () async {
+                              ref
+                                  .read(groupChatMemberRequestProvider)
+                                  .requestToJoin(
+                                    groupChats.docID.toString(),
+                                    groupChats.creatorId,
+                                    groupChats.studyGroupTitle,
+                                    _auth.currentUser!.displayName.toString(),
+                                    await ref
+                                        .watch(institutionIdProviderBasedOnUser)
+                                        .getUniversityBasedId(),
+                                  );
+                            },
+                            title: groupChats.studyGroupTitle,
+                            desc: groupChats.studyGroupDescription,
+                            members: groupChats.membersId.length.toString(),
+                            identifier: membersRequestList
+                                    .contains(_auth.currentUser!.uid)
+                                ? "Pending Application"
+                                : "Join",
+                          );
+                        },
+                      );
+                    }
                   },
                   error: (error, stackTrace) {
                     return Center(
@@ -100,9 +128,3 @@ class FindStudyGroup extends ConsumerWidget {
     );
   }
 }
-
-// //
-//                            requestToJoin(
-//                                 documentId,
-//                                 doc['data']["studyGroupTitle"],
-//                               );

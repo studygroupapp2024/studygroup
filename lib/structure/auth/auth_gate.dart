@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:study_buddy/pages/home/my_home.dart';
+import 'package:study_buddy/pages/account/verify_email.dart';
 import 'package:study_buddy/structure/auth/login_or_register.dart';
 
 class AuthGate extends StatelessWidget {
@@ -14,7 +14,7 @@ class AuthGate extends StatelessWidget {
         builder: (context, snapshot) {
           //user logged in
           if (snapshot.hasData) {
-            return HomePage();
+            return const VerifyEmailPage();
           } else {
             return const LoginOrRegister();
           }

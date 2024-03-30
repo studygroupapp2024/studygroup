@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:study_buddy/components/buttons/rounded_button.dart';
 import 'package:study_buddy/components/dialogs/create_group.dart';
 import 'package:study_buddy/components/textfields/rounded_textfield.dart';
 import 'package:study_buddy/pages/account/forgot_password.dart';
 import 'package:study_buddy/structure/auth/auth_service.dart';
+import 'package:study_buddy/structure/providers/university_provider.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends ConsumerWidget {
   // on Tap
   final void Function()? onTap;
   final TextEditingController _emailController = TextEditingController();
@@ -18,8 +20,8 @@ class LoginPage extends StatelessWidget {
   });
 
   //login with Google
-  void signInWithGoogle(BuildContext context) async {
-    await _authService.signInWithGoogle();
+  void signInWithGoogle(BuildContext context, List<String> domains) async {
+    await _authService.signInWithGoogle(context, domains);
   }
 
   void register() {}
@@ -48,7 +50,9 @@ class LoginPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final domains = ref.watch(universityDomainNamesProvider).value;
+    print("DOMAINS: $domains");
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -63,13 +67,13 @@ class LoginPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Study Buddy",
+                      "TestAPP",
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.inversePrimary,
                           fontSize: 40),
                     ),
                     Text(
-                      "Find study groups and tutors easily",
+                      "Caption Here", //Find study groups and tutors easily
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.inversePrimary,
                           fontSize: 16),
@@ -78,6 +82,7 @@ class LoginPage extends StatelessWidget {
                       height: 50,
                     ),
                     RoundedTextField(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
                       hintText: "Email",
                       obscureText: false,
                       controller: _emailController,
@@ -86,6 +91,7 @@ class LoginPage extends StatelessWidget {
                       height: 25,
                     ),
                     RoundedTextField(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
                       hintText: "Password",
                       controller: _pwController,
                       obscureText: true,
@@ -180,7 +186,10 @@ class LoginPage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: GestureDetector(
-                          onTap: () => signInWithGoogle(context),
+                          onTap: () => signInWithGoogle(
+                            context,
+                            domains!,
+                          ),
                           child: Row(
                             children: [
                               SvgPicture.asset(

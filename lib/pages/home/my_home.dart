@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:study_buddy/components/containers/category_container.dart';
 import 'package:study_buddy/pages/home/my_profile.dart';
+import 'package:study_buddy/structure/models/category_model.dart';
 import 'package:study_buddy/structure/providers/groupchat_provider.dart';
 
 class HomePage extends ConsumerWidget {
@@ -11,8 +13,12 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //   getCategories();
     final checkMemberRequest = ref.watch(userHasStudyGroupRequest);
+    final name = _firebaseAuth.currentUser!.email!.toString();
+    final List<String> nameParts = name.split(' ');
+    final String firstName = nameParts[0];
+    final format = firstName.substring(0, 1).toUpperCase() +
+        firstName.substring(1).toLowerCase();
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home"),
@@ -67,7 +73,7 @@ class HomePage extends ConsumerWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 _firebaseAuth.currentUser?.displayName?.isNotEmpty == true
-                    ? _firebaseAuth.currentUser!.displayName!.toString()
+                    ? format
                     : _firebaseAuth.currentUser!.email!.toString(),
                 style: const TextStyle(
                   fontSize: 20,
@@ -121,46 +127,45 @@ class HomePage extends ConsumerWidget {
                   const SizedBox(
                     height: 15,
                   ),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      return checkMemberRequest.when(
-                        data: (value) {
-                          print("The array is NOT EMPTY?: $value");
-                          print(
-                              "The array is NOT EMPTY?: ${_firebaseAuth.currentUser!.uid}");
-                          return value
-                              ? const Text('User has a study group request')
-                              : const Text('User has no study group request');
-                        },
-                        error: (error, stackTrace) {
-                          return Center(
-                            child: Text('Error: $error'),
-                          );
-                        },
-                        loading: () {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        },
+                  checkMemberRequest.when(
+                    data: (value) {
+                      return Expanded(
+                        child: GridView.builder(
+                          itemCount:
+                              CategoryModel.getCategories(context).length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                          ),
+                          itemBuilder: (context, index) {
+                            final category =
+                                CategoryModel.getCategories(context)[index];
+
+                            return Category(
+                              text: category.name,
+                              iconPath: category.iconPath,
+                              onTap: category.onTap,
+                              caption: category.caption,
+                              notification:
+                                  category.name == "Study Groups" && value
+                                      ? true
+                                      : false,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    error: (error, stackTrace) {
+                      return Center(
+                        child: Text('Error: $error'),
+                      );
+                    },
+                    loading: () {
+                      return const Center(
+                        child: CircularProgressIndicator(),
                       );
                     },
                   ),
-
-                  // child: GridView.builder(
-                  //   itemCount: categories.length,
-                  //   gridDelegate:
-                  //       const SliverGridDelegateWithFixedCrossAxisCount(
-                  //           crossAxisCount: 2),
-                  //   itemBuilder: (context, index) {
-                  //     return Category(
-                  //       text: categories[index].name,
-                  //       iconPath: categories[index].iconPath,
-                  //       onTap: categories[index].onTap,
-                  //       caption: categories[index].caption,
-                  //       request: 'Empty',
-                  //     );
-                  //   },
-                  // ),
                 ],
               ),
             ),
@@ -170,15 +175,3 @@ class HomePage extends ConsumerWidget {
     );
   }
 }
-
-// List<CategoryModel> categories = [];
-
-  // void _getCategories() {
-  //   categories = CategoryModel.getCategories(context);
-  // }
-
-  // @override
-  // void initState() {
-  //   _getCategories();
-  //   super.initState();
-  // }

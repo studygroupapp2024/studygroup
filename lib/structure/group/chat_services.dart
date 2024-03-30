@@ -7,7 +7,13 @@ class ChatService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> sendMessage(String groupChatid, message) async {
+  Future<void> sendMessage(
+    String groupChatid,
+    String message,
+    String type,
+    String downloadUrl,
+    String institutionId,
+  ) async {
     // get current user info
     final String currentUserId = _firebaseAuth.currentUser!.uid;
     final String curreUserEmail =
@@ -23,30 +29,44 @@ class ChatService extends ChangeNotifier {
       message: message,
       senderImage: currentPhoto,
       timestamp: timestamp,
+      type: type,
+      downloadUrl: downloadUrl,
     );
 
     // add new message to database
     await _firestore
+        .collection("institution")
+        .doc(institutionId)
         .collection('study_groups')
         .doc(groupChatid)
         .collection("messages")
         .add(newMessage.toMap());
 
     // add GroupChat LastMessage, LastMessageSender, and LastMessageTimeSent
-    await _firestore.collection("study_groups").doc(groupChatid).update({
-      "lastMessage": message,
-      "lastMessageSender": curreUserEmail,
-      "lastMessageTimeSent": timestamp,
-    });
+    _firestore
+        .collection("institution")
+        .doc(institutionId)
+        .collection("study_groups")
+        .doc(groupChatid)
+        .update(
+      {
+        "lastMessage": message,
+        "lastMessageSender": curreUserEmail,
+        "lastMessageTimeSent": timestamp,
+        "lastMessageType": type,
+      },
+    );
   }
 
   // get messages
-  Stream<QuerySnapshot> getMessages(String groupChatId) {
-    return _firestore
-        .collection("study_groups")
-        .doc(groupChatId)
-        .collection("messages")
-        .orderBy("timestamp", descending: true)
-        .snapshots();
-  }
+  // Stream<QuerySnapshot> getMessages(String groupChatId) {
+  //   return _firestore
+  //       .collection("institution")
+  //       .doc(institutionId)
+  //       .collection("study_groups")
+  //       .doc(groupChatId)
+  //       .collection("messages")
+  //       .orderBy("timestamp", descending: true)
+  //       .snapshots();
+  // }
 }

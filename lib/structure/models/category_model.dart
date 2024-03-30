@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:study_buddy/pages/home/create_study_group.dart';
-import 'package:study_buddy/pages/home/my_course.dart';
-import 'package:study_buddy/pages/home/my_groups.dart';
+import 'package:study_buddy/pages/home/my_courses.dart';
+import 'package:study_buddy/pages/home/my_study_groups.dart';
 import 'package:study_buddy/pages/home/search_study_group.dart';
 
 class CategoryModel {
@@ -32,7 +32,7 @@ class CategoryModel {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const FindCourses(),
+              builder: (context) => FindCourses(),
             ),
           );
         },

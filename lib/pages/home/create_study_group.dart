@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:study_buddy/components/buttons/rounded_button.dart';
 import 'package:study_buddy/components/dialogs/create_group.dart';
+import 'package:study_buddy/components/no_data_holder.dart';
 import 'package:study_buddy/components/textfields/rounded_textfield_title.dart';
+import 'package:study_buddy/pages/home/my_courses.dart';
 import 'package:study_buddy/structure/providers/course_provider.dart';
 import 'package:study_buddy/structure/providers/create_group_chat_providers.dart';
 import 'package:study_buddy/structure/providers/groupchat_provider.dart';
@@ -38,15 +40,15 @@ class CreateStudyGroup extends ConsumerWidget {
               child: Column(
                 children: [
                   RoundedTextFieldTitle(
-                    title: "Name",
-                    hinttext: "What is the name of the study group?",
+                    title: "What is the name of the study group?",
+                    hinttext: "Name",
                     controller: _nameController,
                     onChange: (val) {
                       ref.read(chatNameProvider.notifier).state = val;
                     },
                   ),
                   const SizedBox(
-                    height: 25,
+                    height: 15,
                   ),
                   const Padding(
                     padding: EdgeInsets.only(
@@ -56,9 +58,9 @@ class CreateStudyGroup extends ConsumerWidget {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Courses",
+                        "What course is the study group for?",
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 20,
                         ),
                       ),
                     ),
@@ -67,60 +69,67 @@ class CreateStudyGroup extends ConsumerWidget {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25),
-                        child: Consumer(
-                          builder: (context, ref, child) {
-                            return currentUserCourse.when(
-                                data: (currentCourses) {
-                              if (currentCourses.isEmpty) {
-                                return const Text(
-                                    "You have no enrolled courses.");
-                              } else {
-                                return Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Wrap(
-                                    children: currentCourses.map((completed) {
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 5),
-                                        child: FilterChip(
-                                          label: Text(completed.courseCode),
-                                          selected: selectedCourse ==
-                                              completed.courseCode,
-                                          onSelected: (bool selected) {
-                                            ref
-                                                .read(selectedCourseProvider
-                                                    .notifier)
-                                                .state = completed.courseCode;
-                                            ref
-                                                .read(selectedcourseIdProvider
-                                                    .notifier)
-                                                .state = completed.courseId;
-                                          },
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                                );
-                              }
-                            }, error: (error, stackTrace) {
-                              return Center(
-                                child: Text('Error: $error'),
-                              );
-                            }, loading: () {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            });
-                          },
-                        ),
+                        child: currentUserCourse.when(data: (currentCourses) {
+                          if (currentCourses.isEmpty) {
+                            return Center(
+                              child: NoContent(
+                                  icon:
+                                      'assets/icons/study-student_svgrepo.com.svg',
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FindCourses(),
+                                      ),
+                                    );
+                                  },
+                                  description: "You have no enrolled courses.",
+                                  buttonText: "Enroll in a course"),
+                            );
+                          } else {
+                            return Align(
+                              alignment: Alignment.centerLeft,
+                              child: Wrap(
+                                children: currentCourses.map((completed) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 5),
+                                    child: FilterChip(
+                                      label: Text(completed.courseCode),
+                                      selected: selectedCourse ==
+                                          completed.courseCode,
+                                      onSelected: (bool selected) {
+                                        ref
+                                            .read(
+                                                selectedCourseProvider.notifier)
+                                            .state = completed.courseCode;
+                                        ref
+                                            .read(selectedcourseIdProvider
+                                                .notifier)
+                                            .state = completed.courseId;
+                                      },
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            );
+                          }
+                        }, error: (error, stackTrace) {
+                          return Center(
+                            child: Text('Error: $error'),
+                          );
+                        }, loading: () {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }),
                       ),
                     ],
                   ),
                   const SizedBox(
-                    height: 25,
+                    height: 15,
                   ),
                   RoundedTextFieldTitle(
-                    title: "Description",
+                    title: "What is the study group all about?",
                     controller: _descriptionController,
                     hinttext:
                         "Let other students know about the purpose of the study group.",
@@ -135,7 +144,7 @@ class CreateStudyGroup extends ConsumerWidget {
                     text: "Create Study Group",
                     onTap: () async {
                       final success =
-                          await ref.read(createGroupChatProvider).addStudyGroup(
+                          await ref.read(groupChatProvider).addStudyGroup(
                                 _nameController.text,
                                 _descriptionController.text,
                                 selectedCourse.toString(),

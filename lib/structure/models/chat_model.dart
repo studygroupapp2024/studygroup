@@ -8,6 +8,8 @@ class MessageModel {
   final String message;
   final String senderImage;
   final Timestamp timestamp;
+  final String type;
+  final String? downloadUrl;
 
   MessageModel({
     required this.senderId,
@@ -16,6 +18,8 @@ class MessageModel {
     required this.message,
     required this.senderImage,
     required this.timestamp,
+    required this.type,
+    this.downloadUrl,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +30,8 @@ class MessageModel {
       'message': message,
       'senderImage': senderImage,
       'timestamp': timestamp,
+      'type': type,
+      'downloadUrl': downloadUrl,
     };
   }
 
@@ -37,6 +43,8 @@ class MessageModel {
       message: map['message'] as String,
       senderImage: map['groupChatId'] as String,
       timestamp: Timestamp.fromDate(DateTime.parse(map['timestamp'] as String)),
+      type: map['type'] as String,
+      downloadUrl: map['downloadUrl'] as String,
     );
   }
 
@@ -49,6 +57,8 @@ class MessageModel {
       message: doc['message'],
       senderImage: doc['senderImage'],
       timestamp: doc['timestamp'],
+      type: doc['type'],
+      downloadUrl: doc['downloadUrl'],
     );
   }
 }

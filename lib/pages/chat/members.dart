@@ -1,56 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:study_buddy/components/containers/members_container.dart';
 import 'package:study_buddy/structure/providers/groupchat_provider.dart';
 
 class Members extends ConsumerWidget {
   final String groupChatId;
+  final String creatorId;
   const Members({
     super.key,
     required this.groupChatId,
+    required this.creatorId,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberRequestModel = ref.watch(
-      singleGroupChatInformationProvider(groupChatId),
+    final groupChatMembers = ref.watch(
+      groupChatMembersProvider(groupChatId),
     );
     return Scaffold(
       appBar: AppBar(
         title: const Text("Members"),
       ),
-      body: Expanded(
-        child: Consumer(
-          builder: (context, ref, child) {
-            return memberRequestModel.when(
-              data: (membersList) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: membersList.membersId.length,
-                  itemBuilder: (context, index) {
-                    final members = membersList.membersId[index];
-                    final membersId = membersList.membersId[index];
-                    final creator = membersList.creatorId;
+      body: Consumer(
+        builder: (context, ref, child) {
+          return groupChatMembers.when(
+            data: (membersList) {
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: membersList.length,
+                itemBuilder: (context, index) {
+                  final members = membersList[index];
 
-                    return ListTile(
-                      title: Text(members),
-                      subtitle: membersId == creator
-                          ? const Text("Admin")
-                          : const Text("Member"),
-                    );
-                  },
-                );
-              },
-              error: (error, stackTrace) {
-                return Center(
-                  child: Text('Error: $error'),
-                );
-              },
-              loading: () {
-                return const Center(child: CircularProgressIndicator());
-              },
-            );
-          },
-        ),
+                  return MembersContainer(
+                    member: members.name,
+                    role: members.isAdmin ? "Admin" : "Member",
+                    image: members.imageUrl,
+                    isAdmin: members.isAdmin,
+                    creatorId: creatorId,
+                    onPressed: () {
+                      ref
+                          .read(groupChatProvider)
+                          .removeMember(groupChatId, members.userId);
+                    },
+                  );
+                },
+              );
+            },
+            error: (error, stackTrace) {
+              return Center(
+                child: Text('Error: $error'),
+              );
+            },
+            loading: () {
+              return const Center(child: CircularProgressIndicator());
+            },
+          );
+        },
       ),
     );
   }

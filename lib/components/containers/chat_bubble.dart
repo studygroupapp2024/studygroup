@@ -5,6 +5,9 @@ class ChatBubble extends StatelessWidget {
   final Color backgroundColor;
   final Color textColor;
   final BorderRadiusGeometry? borderRadius;
+  final TextAlign? textAlign;
+  final double? fontSize;
+  final void Function()? onTap;
 
   final String senderMessage;
   const ChatBubble({
@@ -14,14 +17,19 @@ class ChatBubble extends StatelessWidget {
     required this.backgroundColor,
     required this.textColor,
     required this.borderRadius,
+    required this.textAlign,
+    required this.fontSize,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 10, right: 10),
+    return GestureDetector(
+      onTap: onTap,
       child: IntrinsicWidth(
         child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          constraints: const BoxConstraints(maxWidth: 250),
           alignment: alignment,
           padding: const EdgeInsets.only(
             right: 15,
@@ -34,10 +42,12 @@ class ChatBubble extends StatelessWidget {
             borderRadius: borderRadius,
           ),
           child: Text(
+            textWidthBasis: TextWidthBasis.parent,
+            textAlign: textAlign,
             senderMessage,
             style: TextStyle(
               color: textColor,
-              fontSize: 15,
+              fontSize: fontSize,
             ),
           ),
         ),

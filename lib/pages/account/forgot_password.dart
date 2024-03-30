@@ -102,6 +102,7 @@ class _ForgotPasswordPage extends State<ForgotPasswordPage> {
               height: 25,
             ),
             RoundedTextField(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
               hintText: "Email",
               obscureText: false,
               controller: _emailController,
